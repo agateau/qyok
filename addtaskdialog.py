@@ -26,6 +26,8 @@ class AddTaskDialog(QDialog):
 
         self.ui.doneDateEdit.setDate(QDate.currentDate())
 
+        self.ui.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Add Task"))
+
     def showErrorMessage(self, msg):
         self.ui.errorLabel.setText(msg)
         self.ui.errorLabel.show()
