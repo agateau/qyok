@@ -26,7 +26,18 @@ class AddTaskDialog(QDialog):
 
         self.ui.doneDateEdit.setDate(QDate.currentDate())
 
-        self.ui.buttonBox.button(QDialogButtonBox.Ok).setText(self.tr("Add Task"))
+        self.okButton = self.ui.buttonBox.button(QDialogButtonBox.Ok)
+        self.okButton.setText(self.tr("&Add Task"))
+
+        QObject.connect(self.ui.projectLineEdit, SIGNAL("textChanged(QString)"), self.updateOkButton)
+        QObject.connect(self.ui.titleLineEdit, SIGNAL("textChanged(QString)"), self.updateOkButton)
+        self.updateOkButton()
+
+    def updateOkButton(self):
+        self.okButton.setEnabled( \
+            not self.ui.projectLineEdit.text().isEmpty() \
+            and not self.ui.titleLineEdit.text().isEmpty() \
+            )
 
     def showErrorMessage(self, msg):
         self.ui.errorLabel.setText(msg)
