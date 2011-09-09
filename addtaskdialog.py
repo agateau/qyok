@@ -4,6 +4,7 @@ from datetime import datetime
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from yokadi import db
 from yokadi import dbutils
 from yokadi import parseutils
 from yokadi.yokadiexception import YokadiException
@@ -16,6 +17,12 @@ class AddTaskDialog(QDialog):
         self.ui = Ui_AddTaskDialog()
         self.ui.setupUi(self)
         self.ui.errorLabel.hide()
+
+        project_list = db.Project.select(orderBy=db.Project.q.name)
+        lst = [x.name for x in project_list]
+        completer = QCompleter(lst, self)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        self.ui.projectLineEdit.setCompleter(completer)
 
     def showErrorMessage(self, msg):
         self.ui.errorLabel.setText(msg)
