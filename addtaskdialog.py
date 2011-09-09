@@ -24,6 +24,8 @@ class AddTaskDialog(QDialog):
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.ui.projectLineEdit.setCompleter(completer)
 
+        self.ui.doneDateEdit.setDate(QDate.currentDate())
+
     def showErrorMessage(self, msg):
         self.ui.errorLabel.setText(msg)
         self.ui.errorLabel.show()
