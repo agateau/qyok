@@ -1,0 +1,4 @@
+*.pyc
+ui_*.py
+.*.swp
+*.db
