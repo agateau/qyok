@@ -18,9 +18,8 @@ class AddTaskDialog(QDialog):
         self.ui.setupUi(self)
         self.ui.errorLabel.hide()
 
-        project_list = db.Project.select(orderBy=db.Project.q.name)
-        lst = [x.name for x in project_list]
-        completer = QCompleter(lst, self)
+        self.projectList = [x.name for x in db.Project.select(orderBy=db.Project.q.name)]
+        completer = QCompleter(self.projectList, self)
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.ui.projectLineEdit.setCompleter(completer)
 
@@ -43,8 +42,24 @@ class AddTaskDialog(QDialog):
         self.ui.errorLabel.setText(msg)
         self.ui.errorLabel.show()
 
+    def confirmProjectCreation(self, projectName):
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Question)
+        box.setWindowTitle(self.tr("Project does not exist"))
+        box.setText(self.tr("Project \"%1\" does not exist. Create it?").arg(projectName))
+
+        button = box.addButton(QMessageBox.Ok)
+        button.setText(self.tr("&Create Project"))
+        box.addButton(QMessageBox.Cancel)
+        return box.exec_() == QMessageBox.Ok
+
     def accept(self):
-        line = unicode(self.ui.projectLineEdit.text()) + u" " + unicode(self.ui.titleLineEdit.text())
+        projectName = unicode(self.ui.projectLineEdit.text())
+        if not projectName in self.projectList:
+            if not self.confirmProjectCreation(projectName):
+                return
+
+        line = projectName + u" " + unicode(self.ui.titleLineEdit.text())
         projectName, title, keywordDict = parseutils.parseLine(line)
 
         try:
