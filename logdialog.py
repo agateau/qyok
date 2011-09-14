@@ -71,6 +71,7 @@ class LogDialog(QDialog):
         super(LogDialog, self).__init__()
         self.ui = Ui_LogDialog()
         self.ui.setupUi(self)
+        self.layout().setMargin(0)
 
         self.ui.fromDateEdit.setFocus()
         self.ui.fromDateEdit.setDate(QDate.currentDate())
