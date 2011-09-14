@@ -6,17 +6,45 @@ from PyQt4.QtGui import *
 
 from sqlobject import AND
 
+from jinja2 import Template
+
 from yokadi.db import Task
 
 from ui_logdialog import Ui_LogDialog
 
-def u8(*args):
-    def _u8(txt):
-        return txt.encode("utf-8")
-    if len(args) == 1:
-        return _u8(args[0])
-    else:
-        return [_u8(x) for x in args]
+TEMPLATE = Template(u"""
+<html>
+<head>
+<style>
+body {
+    font-family: sans-serif;
+}
+h1 {
+    font-size: 120%;
+    margin: 0;
+    padding: 0;
+    padding-top: 1em;
+}
+h1:first-child {
+    padding-top: 0;
+}
+ul {
+    margin: 0;
+}
+</style>
+</head>
+<body>
+{% for project in projects %}
+    <h1>{{ project }}</h1>
+    <ul>
+    {% for task in taskDict[project] %}
+        <li>{{ task }}</li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+</body>
+</html>
+""")
 
 class LogDialog(QDialog):
     def __init__(self):
@@ -47,16 +75,7 @@ class LogDialog(QDialog):
                 taskDict[project] = []
             taskDict[project].append(task.title)
 
-        lines = []
-        lines.append("<html><body>")
         projects = taskDict.keys()
         projects.sort()
-        for project in projects:
-            lines.append("<h1>{}</h1>".format(u8(project)))
-            lines.append("<ul>")
-            for task in taskDict[project]:
-                lines.append("<li>{}</li>".format(u8(task)))
-            lines.append("</ul>")
-        lines.append("</body></html>")
-
-        self.ui.webView.setHtml(QString.fromUtf8("\n".join(lines)))
+        html = TEMPLATE.render(projects=projects, taskDict=taskDict)
+        self.ui.webView.setHtml(html)
