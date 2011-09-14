@@ -1,2 +1,9 @@
-This should contain a set of Qt-based tools for Yokadi. For now the only
-available tool is qyadd, a simple dialog to add tasks.
+This is a set of Qt-based tools for Yokadi.
+
+# qyadd
+
+A simple dialog to add tasks
+
+# qylog
+
+List done task for the day
