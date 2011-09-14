@@ -10,6 +10,14 @@ from yokadi.db import Task
 
 from ui_logdialog import Ui_LogDialog
 
+def u8(*args):
+    def _u8(txt):
+        return txt.encode("utf-8")
+    if len(args) == 1:
+        return _u8(args[0])
+    else:
+        return [_u8(x) for x in args]
+
 class LogDialog(QDialog):
     def __init__(self):
         super(LogDialog, self).__init__()
@@ -32,14 +40,23 @@ class LogDialog(QDialog):
             Task.q.doneDate < maxDate, \
             ))
 
-        titles = [x.title for x in lst]
+        taskDict = {}
+        for task in lst:
+            project = task.project.name
+            if not project in taskDict:
+                taskDict[project] = []
+            taskDict[project].append(task.title)
 
         lines = []
         lines.append("<html><body>")
-        lines.append("<ul>")
-        for title in titles:
-            lines.append("<li>{}</li>".format(title.encode("utf-8")))
-        lines.append("</ul>")
+        projects = taskDict.keys()
+        projects.sort()
+        for project in projects:
+            lines.append("<h1>{}</h1>".format(u8(project)))
+            lines.append("<ul>")
+            for task in taskDict[project]:
+                lines.append("<li>{}</li>".format(u8(task)))
+            lines.append("</ul>")
         lines.append("</body></html>")
 
         self.ui.webView.setHtml(QString.fromUtf8("\n".join(lines)))
