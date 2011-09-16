@@ -28,33 +28,43 @@ TEMPLATE = ENVIRONMENT.from_string(u"""
 <style>
 body {
     font-family: sans-serif;
+    background-color: #bbb;
+    padding: 0;
+    margin: 0;
 }
 h1 {
-    font-size: 140%;
+    font-size: 120%;
     text-align: center;
+    padding: 0;
+    margin: 0;
 }
 h2 {
-    font-size: 120%;
+    font-size: 100%;
     margin: 0;
     padding: 0;
-    padding-top: 1em;
+    padding-top: 0.5em;
 }
 h2:first-child {
     padding-top: 0;
 }
 ul {
     margin: 0;
+    padding: 0;
+    padding-left: 1.5em;
+}
+li {
+    margin: 0;
 }
 .day {
-    border-top: 1px dotted silver;
-}
-.day:first-child {
-    border-top: none;
+    border: 1px solid #444;
+    margin: 6px;
+    padding: 6px;
+    background-color: white;
 }
 </style>
 </head>
 <body>
-{% for date, projects in dct|dictsort %}
+{% for date, projects in dct|dictsort|reverse %}
     <div class='day'>
     <h1>{{ date|formatdate }}</h1>
     {% for project, tasks in projects|dictsort %}
