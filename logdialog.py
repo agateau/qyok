@@ -81,6 +81,7 @@ class LogDialog(QDialog):
         QObject.connect(self.ui.fromDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
         QObject.connect(self.ui.toDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
         QObject.connect(self.ui.projectLineEdit, SIGNAL("textChanged(QString)"), self.updateView)
+        QObject.connect(self.ui.showEmptyDaysCheckBox, SIGNAL("toggled(bool)"), self.updateView)
 
         self.updateView()
 
@@ -132,11 +133,12 @@ class LogDialog(QDialog):
             dct[date][project].append(title)
 
         # Add missing days
-        date = minDate.date()
-        while date < maxDate.date():
-            if not date in dct:
-                dct[date] = {}
-            date += timedelta(1)
+        if self.ui.showEmptyDaysCheckBox.isChecked():
+            date = minDate.date()
+            while date < maxDate.date():
+                if not date in dct:
+                    dct[date] = {}
+                date += timedelta(1)
 
         html = TEMPLATE.render(dct=dct)
         self.ui.webView.setHtml(html)
