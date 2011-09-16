@@ -58,8 +58,6 @@ ul {
     {% endfor %}
     </div>
 {% endfor %}
-</tr>
-</table>
 </body>
 </html>
 """)
