@@ -123,7 +123,7 @@ class LogDialog(QDialog):
             filters.append(
                 IN(
                     Task.q.project,
-                    Select(Project.q.id, LIKE(Project.q.name, unicode(projectFilter)))
+                    Select(Project.q.id, LIKE(Project.q.name, "%" + unicode(projectFilter) + "%"))
                 ))
 
         tasks = Task.select(AND(*filters))
