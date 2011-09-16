@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from sqlobject import AND
+from sqlobject import AND, LIKE, IN
+from sqlobject.sqlbuilder import Select
 
 from jinja2 import Template
 
-from yokadi.db import Task
+from yokadi.db import Task, Project
 
 from ui_logdialog import Ui_LogDialog
 
@@ -81,6 +82,7 @@ class LogDialog(QDialog):
 
         QObject.connect(self.ui.fromDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
         QObject.connect(self.ui.toDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
+        QObject.connect(self.ui.projectLineEdit, SIGNAL("textChanged(QString)"), self.updateView)
 
         self.updateView()
 
@@ -91,11 +93,23 @@ class LogDialog(QDialog):
             minDate, maxDate = maxDate, minDate
 
         maxDate += timedelta(1)
-        tasks = Task.select(AND( \
+
+        filters = [ \
             Task.q.status == "done", \
             Task.q.doneDate >= minDate, \
-            Task.q.doneDate < maxDate, \
-            ))
+            Task.q.doneDate < maxDate \
+            ]
+
+        projectFilter = self.ui.projectLineEdit.text()
+        if not projectFilter.isEmpty():
+            filters.append(
+                IN(
+                    Task.q.project,
+                    Select(Project.q.id, LIKE(Project.q.name, unicode(projectFilter)))
+                ))
+
+        tasks = Task.select(AND(*filters))
+
 
         # Create a tree-like struct with a dict of the form:
         # {date => {project => [tasks]}
