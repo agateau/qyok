@@ -7,13 +7,22 @@ from PyQt4.QtGui import *
 from sqlobject import AND, LIKE, IN
 from sqlobject.sqlbuilder import Select
 
-from jinja2 import Template
+from jinja2 import Environment
 
 from yokadi.db import Task, Project
 
 from ui_logdialog import Ui_LogDialog
 
-TEMPLATE = Template(u"""
+def formatdate(date):
+    """
+    strftime may return a string with accent ("August" in fr is "Août" for
+    example), so we need to turn it into proper unicode.
+    """
+    return unicode(date.strftime("%A %d %B %Y"), "utf-8")
+
+ENVIRONMENT = Environment()
+ENVIRONMENT.filters["formatdate"] = formatdate
+TEMPLATE = ENVIRONMENT.from_string(u"""
 <html>
 <head>
 <style>
@@ -47,12 +56,12 @@ ul {
 <body>
 {% for date, projects in dct|dictsort %}
     <div class='day'>
-    <h1>{{ date.strftime("%A %d %B %Y") }}</h1>
+    <h1>{{ date|formatdate }}</h1>
     {% for project, tasks in projects|dictsort %}
-        <h2>{{ project }}</h2>
+        <h2>{{ project|e }}</h2>
         <ul>
         {% for task in tasks %}
-            <li>{{ task }}</li>
+            <li>{{ task|e }}</li>
         {% endfor %}
         </ul>
     {% endfor %}
