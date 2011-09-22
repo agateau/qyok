@@ -71,6 +71,8 @@ class AddTaskDialog(QDialog):
             self.showErrorMessage("Task not created.")
             return
 
+        task.description = unicode(self.ui.descriptionTextEdit.toPlainText())
+
         if self.ui.statusStarted.isChecked():
             task.status = "started"
         elif self.ui.statusDone.isChecked():

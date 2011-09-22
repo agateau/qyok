@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>191</height>
+    <width>548</width>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Add Task</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
@@ -43,14 +43,34 @@
       <widget class="QLineEdit" name="titleLineEdit"/>
      </item>
      <item row="2" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>D&amp;escription:</string>
+       </property>
+       <property name="buddy">
+        <cstring>descriptionTextEdit</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QPlainTextEdit" name="descriptionTextEdit">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+       <property name="textInteractionFlags">
+        <set>Qt::TextEditorInteraction</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Status:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <layout class="QVBoxLayout" name="verticalLayout">
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QRadioButton" name="statusNew">
          <property name="text">
@@ -69,22 +89,18 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QRadioButton" name="statusDone">
-           <property name="text">
-            <string>&amp;Done</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QDateEdit" name="doneDateEdit">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QRadioButton" name="statusDone">
+         <property name="text">
+          <string>&amp;Done</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDateEdit" name="doneDateEdit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -121,6 +137,16 @@ color: black</string>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>projectLineEdit</tabstop>
+  <tabstop>titleLineEdit</tabstop>
+  <tabstop>descriptionTextEdit</tabstop>
+  <tabstop>statusNew</tabstop>
+  <tabstop>statusStarted</tabstop>
+  <tabstop>statusDone</tabstop>
+  <tabstop>doneDateEdit</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
