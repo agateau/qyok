@@ -28,6 +28,7 @@ TEMPLATE = ENVIRONMENT.from_string(u"""
 <style>
 body {
     font-family: sans-serif;
+    font-size: 10pt;
     background-color: #bbb;
     padding: 0;
     margin: 0;
@@ -50,16 +51,34 @@ h2:first-child {
 ul {
     margin: 0;
     padding: 0;
-    padding-left: 1.5em;
+    list-style-type: none;
 }
 li {
     margin: 0;
+    padding: 0.2em;
+    border-left: 1px solid #666;
+    border-right: 1px solid #666;
+    border-bottom: 1px dotted #666;
+    background-color: white;
+}
+li:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-top: 1px solid #666;
+}
+li:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom: 1px solid #666;
 }
 .day {
-    border: 1px solid #444;
     margin: 6px;
     padding: 6px;
-    background-color: white;
+}
+
+.due-date {
+    float: right;
+    border-left: 1px dotted #666;
 }
 </style>
 </head>
@@ -71,7 +90,12 @@ li {
         <h2>{{ project|e }}</h2>
         <ul>
         {% for task in tasks %}
-            <li>{{ task|e }}</li>
+            <li>
+            {% if task.dueDate %}
+                <span class='due-date'>Due: {{ task.dueDate|formatdate }}</span>
+            {% endif %}
+            {{ task.title|e }}
+            </li>
         {% endfor %}
         </ul>
     {% endfor %}
@@ -142,14 +166,13 @@ class LogDialog(QDialog):
         for task in tasks:
             date = task.doneDate.date()
             project = task.project.name
-            title = task.title
 
             if not date in dct:
                 dct[date] = {}
             if not project in dct[date]:
                 dct[date][project] = []
 
-            dct[date][project].append(title)
+            dct[date][project].append(task)
 
         # Add missing days
         if self.ui.showEmptyDaysCheckBox.isChecked():
