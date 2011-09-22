@@ -24,6 +24,7 @@ def main(argv):
     db.connectDatabase(options.filename)
 
     dlg = AddTaskDialog()
+    dlg.setWindowFlags(dlg.windowFlags() | Qt.WindowStaysOnTopHint)
     return dlg.exec_()
 
 if __name__ == "__main__":
