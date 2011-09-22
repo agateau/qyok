@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from sqlobject import AND, LIKE, IN
+from sqlobject import AND, OR, LIKE, IN
 from sqlobject.sqlbuilder import Select
 
 from jinja2 import Environment
@@ -119,35 +119,74 @@ class LogDialog(QDialog):
         self.ui.fromDateEdit.setDate(QDate.currentDate())
         self.ui.toDateEdit.setDate(QDate.currentDate())
 
+        self.setupDueComboBox()
+
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
 
-        QObject.connect(self.ui.fromDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
-        QObject.connect(self.ui.toDateEdit, SIGNAL("dateChanged(QDate)"), self.updateView)
-        QObject.connect(self.ui.projectLineEdit, SIGNAL("textChanged(QString)"), self.updateView)
+        for obj, signal in [
+                (self.ui.fromDateEdit, "dateChanged(QDate)"),
+                (self.ui.toDateEdit, "dateChanged(QDate)"),
+                (self.ui.projectLineEdit, "textChanged(QString)"),
+                (self.ui.newOrStartedRadioButton, "toggled(bool)"),
+                (self.ui.doneRadioButton, "toggled(bool)"),
+                (self.ui.dueComboBox, "activated(int)"),
+            ]:
+            QObject.connect(obj, SIGNAL(signal), self.updateView)
 
         self.updateView()
 
+    def setupDueComboBox(self):
+        self.ui.dueComboBox.addItem(QString())
+
+        date = QDate.currentDate()
+        self.ui.dueComboBox.addItem(self.tr("Today"), date)
+
+        date = date.addDays(7 - date.dayOfWeek())
+        self.ui.dueComboBox.addItem(self.tr("End of Week"), date)
+
+        date = QDate(date.year(), date.month(), date.daysInMonth())
+        self.ui.dueComboBox.addItem(self.tr("End of Month"), date)
+
     def updateView(self):
-        minDate = datetimeFromQDate(self.ui.fromDateEdit.date())
-        maxDate = datetimeFromQDate(self.ui.toDateEdit.date())
-        if maxDate < minDate:
-            minDate, maxDate = maxDate, minDate
+        filters = []
 
-        maxDate += timedelta(1)
-
-        filters = [ \
-            Task.q.status == "done", \
-            Task.q.doneDate >= minDate, \
-            Task.q.doneDate < maxDate \
-            ]
-
-        projectFilter = self.ui.projectLineEdit.text()
-        if not projectFilter.isEmpty():
+        # Project
+        wantedProject = self.ui.projectLineEdit.text()
+        if not wantedProject.isEmpty():
             filters.append(
                 IN(
                     Task.q.project,
-                    Select(Project.q.id, LIKE(Project.q.name, "%" + unicode(projectFilter) + "%"))
+                    Select(Project.q.id, LIKE(Project.q.name, "%" + unicode(wantedProject) + "%"))
                 ))
+
+        # Status
+        statusFilters = []
+        groupByDoneDate = False
+        if self.ui.newOrStartedRadioButton.isChecked():
+            statusFilters.append(Task.q.status == "new")
+            statusFilters.append(Task.q.status == "started")
+        if self.ui.doneRadioButton.isChecked():
+            groupByDoneDate = True
+            minDate = datetimeFromQDate(self.ui.fromDateEdit.date())
+            maxDate = datetimeFromQDate(self.ui.toDateEdit.date())
+            if maxDate < minDate:
+                minDate, maxDate = maxDate, minDate
+
+            maxDate += timedelta(1)
+            doneFilter = AND( \
+                Task.q.status == "done", \
+                Task.q.doneDate >= minDate, \
+                Task.q.doneDate < maxDate \
+                )
+            statusFilters.append(doneFilter)
+
+        filters.append(OR(*statusFilters))
+
+        # Due date
+        variant = self.ui.dueComboBox.itemData(self.ui.dueComboBox.currentIndex())
+        if variant.isValid():
+            date = datetimeFromQDate(variant.toDate()) + timedelta(1)
+            filters.append(Task.q.dueDate <= date)
 
         tasks = Task.select(AND(*filters))
 
@@ -163,7 +202,10 @@ class LogDialog(QDialog):
         #   - baz
         dct = {}
         for task in tasks:
-            date = task.doneDate.date()
+            if groupByDoneDate:
+                date = task.doneDate.date()
+            else:
+                date = task.creationDate.date()
             project = task.project.name
 
             if not date in dct:
