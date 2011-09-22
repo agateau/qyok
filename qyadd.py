@@ -25,6 +25,9 @@ def main(argv):
 
     dlg = AddTaskDialog()
     dlg.setWindowFlags(dlg.windowFlags() | Qt.WindowStaysOnTopHint)
+
+    description = app.clipboard().text(QClipboard.Selection)
+    dlg.setInitialDescription(description)
     return dlg.exec_()
 
 if __name__ == "__main__":

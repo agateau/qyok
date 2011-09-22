@@ -42,6 +42,9 @@ class AddTaskDialog(QDialog):
         self.ui.errorLabel.setText(msg)
         self.ui.errorLabel.show()
 
+    def setInitialDescription(self, text):
+        self.ui.descriptionTextEdit.setPlainText(text)
+
     def confirmProjectCreation(self, projectName):
         box = QMessageBox(self)
         box.setIcon(QMessageBox.Question)
