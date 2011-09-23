@@ -76,6 +76,7 @@ h1 {
 }
 h2 {
     font-size: 100%;
+    text-shadow: rgba(255, 255, 255, 0.5) 1px 1px;
     margin: 0;
     padding: 0;
     padding-top: 0.5em;
@@ -118,16 +119,25 @@ li:last-child {
 }
 
 .due-date-overdue {
-    background-color: red;
+    background: -webkit-gradient(linear, left top, left bottom,
+        from(#f00),
+        to(#f77)
+        );
     color: white;
 }
 
 .due-date-today {
-    background-color: orange;
+    background: -webkit-gradient(linear, left top, left bottom,
+        from(#f80),
+        to(#fc8)
+        );
 }
 
 .due-date-week {
-    background-color: yellow;
+    background: -webkit-gradient(linear, left top, left bottom,
+        from(#ff0),
+        to(#ff8)
+        );
 }
 
 </style>
