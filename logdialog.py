@@ -148,6 +148,13 @@ li:last-child {
     padding: 0 2px;
 }
 
+.toolbar a {
+    color: #aaa;
+}
+.toolbar a:hover {
+    color: black;
+}
+
 </style>
 </head>
 <body>
