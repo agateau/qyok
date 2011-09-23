@@ -183,11 +183,16 @@ class LogDialog(QDialog):
         self.ui.webView.setHtml(html)
 
     def dispatch(self, url):
+        if not url.scheme().isEmpty():
+            QDesktopServices.openUrl(url)
+            return
         path = unicode(url.path())
         tokens = path.split("/")
         methodName = "do_" + tokens[0]
         if hasattr(self, methodName):
             getattr(self, methodName)(*tokens[1:])
+        else:
+            print "Unknown method", methodName
 
     def do_edit(self, idString):
         task = Task.get(int(idString))
