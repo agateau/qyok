@@ -13,15 +13,50 @@ from yokadi.db import Task, Project
 
 from ui_logdialog import Ui_LogDialog
 
-def formatdate(date):
+def formatDate(date):
     """
     strftime may return a string with accent ("August" in fr is "Août" for
     example), so we need to turn it into proper unicode.
     """
     return unicode(date.strftime("%A %d %B %Y"), "utf-8")
 
+def formatDueDate(dueDate):
+    today = datetime.now()
+    remaining = (dueDate.date() - today.date()).days
+    if remaining == 0:
+        return unicode(QApplication.translate("", "today"))
+    elif remaining == 1:
+        return unicode(QApplication.translate("", "tomorrow"))
+    else:
+        return unicode(dueDate.strftime("%x"), "utf-8")
+
+def dueDateCssClass(task):
+    done = task.status == "done"
+    if done:
+        refDate = task.doneDate
+    else:
+        refDate = datetime.now()
+    remaining = (task.dueDate.date() - refDate.date()).days
+
+    if done:
+        if remaining < 0:
+            return "due-date-overdue"
+        else:
+            return ""
+
+    if remaining < 0:
+        return "due-date-overdue"
+    elif remaining == 0:
+        return "due-date-today"
+    elif remaining < 7:
+        return "due-date-week"
+    else:
+        return ""
+
 ENVIRONMENT = Environment()
-ENVIRONMENT.filters["formatdate"] = formatdate
+ENVIRONMENT.filters["dueDateCssClass"] = dueDateCssClass
+ENVIRONMENT.filters["formatDate"] = formatDate
+ENVIRONMENT.filters["formatDueDate"] = formatDueDate
 TEMPLATE = ENVIRONMENT.from_string(u"""
 <html>
 <head>
@@ -78,8 +113,23 @@ li:last-child {
 
 .due-date {
     float: right;
-    border-left: 1px dotted #666;
+    border-radius: 3px;
+    padding: 0 2px;
 }
+
+.due-date-overdue {
+    background-color: red;
+    color: white;
+}
+
+.due-date-today {
+    background-color: orange;
+}
+
+.due-date-week {
+    background-color: yellow;
+}
+
 </style>
 </head>
 <body>
@@ -92,7 +142,9 @@ li:last-child {
         {% for item in lst %}
             <li>
             {% if item.task.dueDate %}
-                <span class='due-date'>Due: {{ item.task.dueDate|formatdate }}</span>
+                <span class='due-date {{ item.task|dueDateCssClass }}'>
+                    Due: {{ item.task.dueDate|formatDueDate }}
+                </span>
             {% endif %}
             {{ item.task.title|e }}
             </li>
@@ -203,11 +255,11 @@ class LogDialog(QDialog):
             lst.append(item)
 
         if queryType == QUERY_DUE:
-            fmt1 = formatdate
+            fmt1 = formatDate
         elif queryType == QUERY_PROJECT:
             fmt1 = lambda x: x
         elif queryType == QUERY_DONE:
-            fmt1 = formatdate
+            fmt1 = formatDate
         else:
             raise Exception()
 
