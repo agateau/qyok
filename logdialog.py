@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from PyQt4.QtWebKit import *
 
 from sqlobject import AND, OR, LIKE, IN
 from sqlobject.sqlbuilder import Select
@@ -12,6 +13,8 @@ from jinja2 import Environment
 from yokadi.db import Task, Project
 
 from ui_logdialog import Ui_LogDialog
+
+from addtaskdialog import AddTaskDialog
 
 def formatDate(date):
     """
@@ -140,6 +143,11 @@ li:last-child {
         );
 }
 
+.toolbar {
+    float: right;
+    padding: 0 2px;
+}
+
 </style>
 </head>
 <body>
@@ -156,7 +164,10 @@ li:last-child {
                     Due: {{ item.task.dueDate|formatDueDate }}
                 </span>
             {% endif %}
-            {{ item.task.title|e }}
+                <span class='toolbar'>
+                    <a href='edit/{{ item.task.id }}'>Edit</a>
+                </span>
+                {{ item.task.title|e }}
             </li>
         {% endfor %}
         </ul>
@@ -186,6 +197,7 @@ class LogDialog(QDialog):
         self.ui.dueDateEdit.setDate(QDate.currentDate())
 
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
+        self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
 
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
@@ -196,6 +208,9 @@ class LogDialog(QDialog):
             QObject.connect(obj, SIGNAL(signal), self.updateView)
 
         QObject.connect(self.ui.queryListWidget, SIGNAL("itemSelectionChanged()"), self.updateFilterWidgets)
+
+        QObject.connect(self.ui.webView, SIGNAL("linkClicked(const QUrl&)"), self.dispatch)
+
         self.updateFilterWidgets()
         self.updateView()
 
@@ -275,3 +290,16 @@ class LogDialog(QDialog):
 
         html = TEMPLATE.render(lst=lst, fmt1=fmt1)
         self.ui.webView.setHtml(html)
+
+    def dispatch(self, url):
+        path = unicode(url.path())
+        tokens = path.split("/")
+        methodName = "do_" + tokens[0]
+        if hasattr(self, methodName):
+            getattr(self, methodName)(*tokens[1:])
+
+    def do_edit(self, idString):
+        task = Task.get(int(idString))
+        dlg = AddTaskDialog(task, self)
+        if dlg.exec_() == QDialog.Accepted:
+            self.updateView()
