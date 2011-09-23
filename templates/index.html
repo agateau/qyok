@@ -92,7 +92,25 @@ li:last-child {
     color: black;
 }
 
+.description {
+    margin-top: 2px;
+    border-top: 1px dotted #666;
+}
+
+.hidden {
+    display: none;
+}
 </style>
+<script>
+function toggleVisibility(itemId) {
+    var element = document.getElementById(itemId);
+    if (element.getAttribute("class").indexOf("hidden") >= 0) {
+        element.setAttribute("class", "description");
+    } else {
+        element.setAttribute("class", "description hidden");
+    }
+}
+</script>
 </head>
 <body>
 {% for grp1, lst in lst|groupby('grp1') %}
@@ -109,9 +127,17 @@ li:last-child {
                 </span>
             {% endif %}
                 <span class='toolbar'>
+                    {% if item.task.description %}
+                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'>More</a>
+                    {% endif %}
                     <a href='edit/{{ item.task.id }}'>Edit</a>
                 </span>
                 {{ item.task.title|e }}
+                {% if item.task.description %}
+                    <div class='description hidden' id='description-{{ item.task.id }}'>
+                        {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
+                    </div>
+                {% endif %}
             </li>
         {% endfor %}
         </ul>
