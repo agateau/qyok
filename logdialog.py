@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import os
 from datetime import datetime, timedelta
 
 from PyQt4.QtCore import *
@@ -8,7 +9,7 @@ from PyQt4.QtWebKit import *
 from sqlobject import AND, OR, LIKE, IN
 from sqlobject.sqlbuilder import Select
 
-from jinja2 import Environment
+from jinja2 import Environment, FileSystemLoader
 
 from yokadi.db import Task, Project
 
@@ -60,130 +61,9 @@ ENVIRONMENT = Environment()
 ENVIRONMENT.filters["dueDateCssClass"] = dueDateCssClass
 ENVIRONMENT.filters["formatDate"] = formatDate
 ENVIRONMENT.filters["formatDueDate"] = formatDueDate
-TEMPLATE = ENVIRONMENT.from_string(u"""
-<html>
-<head>
-<style>
-body {
-    font-family: sans-serif;
-    font-size: 10pt;
-    background-color: #bbb;
-    padding: 0;
-    margin: 0;
-}
-h1 {
-    font-size: 120%;
-    text-align: center;
-    padding: 0;
-    margin: 0;
-}
-h2 {
-    font-size: 100%;
-    text-shadow: rgba(255, 255, 255, 0.5) 1px 1px;
-    margin: 0;
-    padding: 0;
-    padding-top: 0.5em;
-}
-h2:first-child {
-    padding-top: 0;
-}
-ul {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-}
-li {
-    margin: 0;
-    padding: 0.2em;
-    border-left: 1px solid #666;
-    border-right: 1px solid #666;
-    border-bottom: 1px dotted #666;
-    background-color: white;
-}
-li:first-child {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-    border-top: 1px solid #666;
-}
-li:last-child {
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
-    border-bottom: 1px solid #666;
-}
-.group1 {
-    margin: 6px;
-    padding: 6px;
-}
-
-.due-date {
-    float: right;
-    border-radius: 3px;
-    padding: 0 2px;
-}
-
-.due-date-overdue {
-    background: -webkit-gradient(linear, left top, left bottom,
-        from(#f00),
-        to(#f77)
-        );
-    color: white;
-}
-
-.due-date-today {
-    background: -webkit-gradient(linear, left top, left bottom,
-        from(#f80),
-        to(#fc8)
-        );
-}
-
-.due-date-week {
-    background: -webkit-gradient(linear, left top, left bottom,
-        from(#ff0),
-        to(#ff8)
-        );
-}
-
-.toolbar {
-    float: right;
-    padding: 0 2px;
-}
-
-.toolbar a {
-    color: #aaa;
-}
-.toolbar a:hover {
-    color: black;
-}
-
-</style>
-</head>
-<body>
-{% for grp1, lst in lst|groupby('grp1') %}
-    <div class='group1'>
-    <h1>{{ fmt1(grp1) }}</h1>
-    {% for grp2, lst in lst|groupby('grp2') %}
-        <h2>{{ grp2|e }}</h2>
-        <ul>
-        {% for item in lst %}
-            <li>
-            {% if item.task.dueDate %}
-                <span class='due-date {{ item.task|dueDateCssClass }}'>
-                    Due: {{ item.task.dueDate|formatDueDate }}
-                </span>
-            {% endif %}
-                <span class='toolbar'>
-                    <a href='edit/{{ item.task.id }}'>Edit</a>
-                </span>
-                {{ item.task.title|e }}
-            </li>
-        {% endfor %}
-        </ul>
-    {% endfor %}
-    </div>
-{% endfor %}
-</body>
-</html>
-""")
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
+ENVIRONMENT.loader = FileSystemLoader(TEMPLATE_DIR)
+TEMPLATE = ENVIRONMENT.get_template("index.html")
 
 def datetimeFromQDate(qdate):
     return datetime(qdate.year(), qdate.month(), qdate.day())
