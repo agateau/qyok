@@ -57,14 +57,6 @@ def dueDateCssClass(task):
     else:
         return ""
 
-ENVIRONMENT = Environment()
-ENVIRONMENT.filters["dueDateCssClass"] = dueDateCssClass
-ENVIRONMENT.filters["formatDate"] = formatDate
-ENVIRONMENT.filters["formatDueDate"] = formatDueDate
-TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
-ENVIRONMENT.loader = FileSystemLoader(TEMPLATE_DIR)
-TEMPLATE = ENVIRONMENT.get_template("index.html")
-
 def datetimeFromQDate(qdate):
     return datetime(qdate.year(), qdate.month(), qdate.day())
 
@@ -78,6 +70,8 @@ class LogDialog(QDialog):
         self.ui = Ui_LogDialog()
         self.ui.setupUi(self)
         self.layout().setMargin(0)
+
+        self.setupJinjaEnv()
 
         self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
         self.ui.toDateEdit.setDate(QDate.currentDate())
@@ -100,6 +94,15 @@ class LogDialog(QDialog):
 
         self.updateFilterWidgets()
         self.updateView()
+
+    def setupJinjaEnv(self):
+        self.jinjaEnv = Environment()
+        self.jinjaEnv.filters["dueDateCssClass"] = dueDateCssClass
+        self.jinjaEnv.filters["formatDate"] = formatDate
+        self.jinjaEnv.filters["formatDueDate"] = formatDueDate
+
+        tmplDir = os.path.join(os.path.dirname(__file__), "templates")
+        self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
@@ -175,7 +178,8 @@ class LogDialog(QDialog):
         else:
             raise Exception()
 
-        html = TEMPLATE.render(lst=lst, fmt1=fmt1)
+        tmpl = self.jinjaEnv.get_template("index.html")
+        html = tmpl.render(lst=lst, fmt1=fmt1)
         self.ui.webView.setHtml(html)
 
     def dispatch(self, url):
