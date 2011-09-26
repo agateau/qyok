@@ -45,6 +45,8 @@ class AddTaskDialog(QDialog):
     def initFromTask(self):
         self.ui.projectLineEdit.setText(self.task.project.name)
         self.ui.titleLineEdit.setText(self.task.title)
+        if self.task.dueDate is not None:
+            self.ui.dueDateEdit.setDate(qdateFromDatetime(self.task.dueDate))
         if self.task.description is not None:
             self.ui.descriptionTextEdit.setPlainText(self.task.description)
         if self.task.status == "done":
@@ -110,6 +112,11 @@ class AddTaskDialog(QDialog):
             task.project = project
 
         task.description = unicode(self.ui.descriptionTextEdit.toPlainText())
+        qdate = self.ui.dueDateEdit.date()
+        if qdate is None:
+            task.dueDate = None
+        else:
+            task.dueDate = datetime(qdate.year(), qdate.month(), qdate.day())
 
         if self.ui.statusStarted.isChecked():
             task.status = "started"
