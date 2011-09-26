@@ -2,57 +2,92 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from yokadi import ydateutils
+from yokadi.yokadiexception import YokadiException
+
+from qydateutils import qdateFromDatetime
+
 class YDateEdit(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed, QSizePolicy.SpinBox))
         self.setFocusPolicy(Qt.StrongFocus)
 
-        self._dateButton = QToolButton()
-        self._dateButton.setPopupMode(QToolButton.InstantPopup)
-        self._dateButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
-        self.setFocusProxy(self._dateButton)
+        self._lineEdit = QLineEdit()
+        self._lineEdit.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self._lineEdit.setPlaceholderText(self.tr("None"))
+        self._lineEdit.installEventFilter(self)
+        self.setFocusProxy(self._lineEdit)
 
         self._resetButton = QToolButton()
-        self._resetButton.setText(u"⌫")
+        self._resetButton.setText(u"⨯")
         self._resetButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self._resetButton.setFocusPolicy(Qt.ClickFocus)
 
-        self._calendar = QCalendarWidget()
-        action = QWidgetAction(self)
-        action.setDefaultWidget(self._calendar)
-        menu = QMenu()
-        menu.addAction(action)
-        self._dateButton.setMenu(menu)
+        # Prevent reset button from increasing widget height
+        self._resetButton.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Ignored)
 
         layout = QHBoxLayout(self)
         layout.setMargin(0)
-        layout.addWidget(self._dateButton)
+        layout.setSpacing(0)
+        layout.addWidget(self._lineEdit)
         layout.addWidget(self._resetButton)
         layout.addStretch()
 
         self._date = None
 
+        QObject.connect(self._lineEdit, SIGNAL("textEdited(QString)"), self.slotTextEdited)
         QObject.connect(self._resetButton, SIGNAL("clicked()"), self.resetDate)
-        QObject.connect(self._calendar, SIGNAL("clicked(QDate)"), self.setDate)
-        QObject.connect(self._calendar, SIGNAL("activated(QDate)"), self.setDate)
 
-        self._updateButtons()
+        self._updateLineEdit()
+        self._updateResetButton()
 
-    def _updateButtons(self):
+    def _updateResetButton(self):
+        self._resetButton.setEnabled(not self._lineEdit.text().isEmpty())
+
+    def _updateLineEdit(self):
         if self._date is None:
-            self._dateButton.setText(self.tr("None"))
-            self._resetButton.hide()
+            self._lineEdit.setText(QString())
         else:
-            self._dateButton.setText(self._date.toString())
-            self._resetButton.show()
+            self._lineEdit.setText(self._date.toString(Qt.SystemLocaleShortDate))
+        self._updateResetButton()
 
     def setDate(self, date):
         self._date = date
-        self._dateButton.menu().close()
-        self._updateButtons()
+        self._updateLineEdit()
 
     def date(self):
         return self._date
 
     def resetDate(self):
         self.setDate(None)
+
+    def slotTextEdited(self, text):
+        if text.isEmpty():
+            self.resetDate()
+        else:
+            pos = self.mapToGlobal(QPoint(0, 0))
+            try:
+                date = ydateutils.parseHumaneDateTime(unicode(text))
+                self._date = qdateFromDatetime(date)
+                tip = self._date.toString(Qt.SystemLocaleLongDate)
+            except YokadiException, exc:
+                tip = QString()
+            QToolTip.showText(pos, tip, self, self.rect())
+            self._updateResetButton()
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.FocusOut:
+            self._updateLineEdit()
+        return super(YDateEdit, self).eventFilter(obj, event)
+
+    def sizeHint(self):
+        self.ensurePolished()
+        self._lineEdit.ensurePolished()
+        width = self._lineEdit.fontMetrics().width(" 88-88-8888 ") + self._resetButton.sizeHint().width()
+        print width
+        height = self._lineEdit.sizeHint().height()
+        return QSize(width, height)
+
+    def minimumSizeHint(self):
+        return self.sizeHint()
