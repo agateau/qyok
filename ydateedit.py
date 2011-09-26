@@ -1,3 +1,4 @@
+# coding: utf-8
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -5,15 +6,15 @@ class YDateEdit(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.setFocusPolicy(Qt.StrongFocus)
 
         self._dateButton = QToolButton()
-        self._dateButton.setAutoRaise(True)
         self._dateButton.setPopupMode(QToolButton.InstantPopup)
         self._dateButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.setFocusProxy(self._dateButton)
 
         self._resetButton = QToolButton()
-        self._resetButton.setAutoRaise(True)
-        self._resetButton.setText("x")
+        self._resetButton.setText(u"⌫")
         self._resetButton.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
         self._calendar = QCalendarWidget()
@@ -24,8 +25,10 @@ class YDateEdit(QWidget):
         self._dateButton.setMenu(menu)
 
         layout = QHBoxLayout(self)
+        layout.setMargin(0)
         layout.addWidget(self._dateButton)
         layout.addWidget(self._resetButton)
+        layout.addStretch()
 
         self._date = None
 
