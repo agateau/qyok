@@ -36,7 +36,7 @@ class QYDateEdit(QWidget):
         layout.addWidget(self._resetButton)
         layout.addStretch()
 
-        self._date = None
+        self._date = QDate()
 
         QObject.connect(self._lineEdit, SIGNAL("textEdited(QString)"), self.slotTextEdited)
         QObject.connect(self._resetButton, SIGNAL("clicked()"), self.resetDate)
@@ -48,7 +48,7 @@ class QYDateEdit(QWidget):
         self._resetButton.setEnabled(not self._lineEdit.text().isEmpty())
 
     def _updateLineEdit(self):
-        if self._date is None:
+        if self._date.isNull():
             self._lineEdit.setText(QString())
         else:
             self._lineEdit.setText(self._date.toString(Qt.SystemLocaleShortDate))
@@ -62,7 +62,7 @@ class QYDateEdit(QWidget):
         return self._date
 
     def resetDate(self):
-        self.setDate(None)
+        self.setDate(QDate())
         self.emitDateChanged()
 
     def slotTextEdited(self, text):
