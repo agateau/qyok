@@ -7,7 +7,7 @@ from yokadi.yokadiexception import YokadiException
 
 from qydateutils import qdateFromDatetime
 
-class YDateEdit(QWidget):
+class QYDateEdit(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed, QSizePolicy.SpinBox))
@@ -79,7 +79,7 @@ class YDateEdit(QWidget):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusOut:
             self._updateLineEdit()
-        return super(YDateEdit, self).eventFilter(obj, event)
+        return super(QYDateEdit, self).eventFilter(obj, event)
 
     def sizeHint(self):
         self.ensurePolished()

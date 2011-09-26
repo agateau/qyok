@@ -82,7 +82,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="YDateEdit" name="dueDateEdit"/>
+      <widget class="QYDateEdit" name="dueDateEdit"/>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
@@ -118,7 +118,7 @@
         </widget>
        </item>
        <item>
-        <widget class="YDateEdit" name="doneDateEdit">
+        <widget class="QYDateEdit" name="doneDateEdit">
          <property name="enabled">
           <bool>false</bool>
          </property>
@@ -161,9 +161,9 @@ color: black</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>YDateEdit</class>
+   <class>QYDateEdit</class>
    <extends>QDateEdit</extends>
-   <header>ydateedit.h</header>
+   <header>qydateedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
