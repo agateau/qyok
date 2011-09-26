@@ -85,7 +85,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDateEdit" name="fromDateEdit"/>
+       <widget class="QYDateEdit" name="fromDateEdit"/>
       </item>
       <item>
        <widget class="QLabel" name="label_2">
@@ -98,7 +98,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDateEdit" name="toDateEdit"/>
+       <widget class="QYDateEdit" name="toDateEdit"/>
       </item>
      </layout>
     </widget>
@@ -117,7 +117,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QDateEdit" name="dueDateEdit"/>
+       <widget class="QYDateEdit" name="dueDateEdit"/>
       </item>
      </layout>
     </widget>
@@ -129,6 +129,11 @@
    <class>QWebView</class>
    <extends>QWidget</extends>
    <header>QtWebKit/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>QYDateEdit</class>
+   <extends>QDateEdit</extends>
+   <header>qydateedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

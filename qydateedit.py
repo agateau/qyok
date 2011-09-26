@@ -8,6 +8,8 @@ from yokadi.yokadiexception import YokadiException
 from qydateutils import qdateFromDatetime
 
 class QYDateEdit(QWidget):
+    dateChanged = pyqtSignal(QDate)
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.setSizePolicy(QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed, QSizePolicy.SpinBox))
@@ -61,6 +63,7 @@ class QYDateEdit(QWidget):
 
     def resetDate(self):
         self.setDate(None)
+        self.emitDateChanged()
 
     def slotTextEdited(self, text):
         if text.isEmpty():
@@ -79,6 +82,7 @@ class QYDateEdit(QWidget):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusOut:
             self._updateLineEdit()
+            self.emitDateChanged()
         return super(QYDateEdit, self).eventFilter(obj, event)
 
     def sizeHint(self):
@@ -90,3 +94,6 @@ class QYDateEdit(QWidget):
 
     def minimumSizeHint(self):
         return self.sizeHint()
+
+    def emitDateChanged(self):
+        self.dateChanged.emit(self._date)
