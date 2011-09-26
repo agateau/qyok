@@ -85,7 +85,6 @@ class QYDateEdit(QWidget):
         self.ensurePolished()
         self._lineEdit.ensurePolished()
         width = self._lineEdit.fontMetrics().width(" 88-88-8888 ") + self._resetButton.sizeHint().width()
-        print width
         height = self._lineEdit.sizeHint().height()
         return QSize(width, height)
 
