@@ -179,6 +179,12 @@ class LogDialog(QDialog):
         html = tmpl.render(lst=lst, fmt1=fmt1)
         self.ui.webView.setHtml(html)
 
+    def updateViewAndKeepPosition(self):
+        frame = self.ui.webView.page().currentFrame()
+        pos = frame.scrollPosition()
+        self.updateView()
+        frame.setScrollPosition(pos)
+
     def dispatch(self, url):
         if not url.scheme().isEmpty():
             QDesktopServices.openUrl(url)
@@ -195,4 +201,4 @@ class LogDialog(QDialog):
         task = Task.get(int(idString))
         dlg = AddTaskDialog(task, self)
         if dlg.exec_() == QDialog.Accepted:
-            self.updateView()
+            self.updateViewAndKeepPosition()
