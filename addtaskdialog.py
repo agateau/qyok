@@ -10,9 +10,7 @@ from yokadi import parseutils
 from yokadi.yokadiexception import YokadiException
 
 from ui_addtaskdialog import Ui_AddTaskDialog
-
-def qdateFromDatetime(dt):
-    return QDate(dt.year, dt.month, dt.day)
+from qydateutils import datetimeFromQDate, qdateFromDatetime
 
 class AddTaskDialog(QDialog):
     def __init__(self, task=None, parent=None):
@@ -112,18 +110,13 @@ class AddTaskDialog(QDialog):
             task.project = project
 
         task.description = unicode(self.ui.descriptionTextEdit.toPlainText())
-        qdate = self.ui.dueDateEdit.date()
-        if qdate is None:
-            task.dueDate = None
-        else:
-            task.dueDate = datetime(qdate.year(), qdate.month(), qdate.day())
+        task.dueDate = datetimeFromQDate(self.ui.dueDateEdit.date())
 
         if self.ui.statusStarted.isChecked():
             task.status = "started"
         elif self.ui.statusDone.isChecked():
             task.status = "done"
-            qdate = self.ui.doneDateEdit.date()
-            task.doneDate = datetime(qdate.year(), qdate.month(), qdate.day())
+            task.doneDate = datetimeFromQDate(self.ui.doneDateEdit.date())
 
         super(AddTaskDialog, self).accept()
 

@@ -14,8 +14,8 @@ from jinja2 import Environment, FileSystemLoader
 from yokadi.db import Task, Project
 
 from ui_logdialog import Ui_LogDialog
-
 from addtaskdialog import AddTaskDialog
+from qydateutils import datetimeFromQDate, qdateFromDatetime
 
 def formatDate(date):
     """
@@ -56,9 +56,6 @@ def dueDateCssClass(task):
         return "due-date-week"
     else:
         return ""
-
-def datetimeFromQDate(qdate):
-    return datetime(qdate.year(), qdate.month(), qdate.day())
 
 QUERY_DUE = 0
 QUERY_PROJECT = 1
