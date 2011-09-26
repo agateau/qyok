@@ -114,21 +114,17 @@
       </layout>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="dueDateLabel">
        <property name="text">
-        <string>Due Date:</string>
+        <string>D&amp;ue Date:</string>
+       </property>
+       <property name="buddy">
+        <cstring>dueDateEdit</cstring>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="YDateEdit" name="dueDateEdit" native="true">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>0</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="YDateEdit" name="dueDateEdit"/>
      </item>
     </layout>
    </item>
@@ -166,15 +162,15 @@ color: black</string>
  <customwidgets>
   <customwidget>
    <class>YDateEdit</class>
-   <extends>QWidget</extends>
+   <extends>QDateEdit</extends>
    <header>ydateedit.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>
   <tabstop>projectLineEdit</tabstop>
   <tabstop>titleLineEdit</tabstop>
   <tabstop>descriptionTextEdit</tabstop>
+  <tabstop>dueDateEdit</tabstop>
   <tabstop>statusNew</tabstop>
   <tabstop>statusStarted</tabstop>
   <tabstop>statusDone</tabstop>
