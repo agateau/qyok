@@ -102,21 +102,30 @@ ul.tasks > li:last-child {
 }
 
 /* Status */
-ul.status {
+.status {
     display: inline;
     padding: 0;
     margin: 0;
 }
-ul.status li {
-    display: inline;
+.status .item {
+    color: #aaa;
     border: 1px solid #ccc;
     border-radius: 5px;
-    text-align: center;
+    text-decoration: none;
     padding: 0 3px;
-    margin-left: 1px;
+    margin-left: -3px;
 }
-ul.status li.active-status {
+.status .item:first-child {
+    margin-left: 0;
+}
+
+.status a:hover {
+    background-color: #eee;
+}
+
+.status .active-status {
     background-color: #aaa;
+    color: black;
 }
 /* /Status */
 
@@ -150,18 +159,6 @@ function toggleVisibility(itemId) {
         {% for item in lst %}
             <li>
                 <span class='toolbar'>
-                    <ul class='status'>
-                    {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
-                        {% if item.task.status == status %}
-                        <li class='active-status'>
-                            <span title='{{ status|capitalize }}'>{{ label }}</span>
-                        {% else %}
-                        <li>
-                            <a href='y:setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                    </ul>
                     <a href='y:edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
                 </span>
                 {% if item.task.dueDate %}
@@ -169,6 +166,15 @@ function toggleVisibility(itemId) {
                         {{ item.task.dueDate|formatDueDate }}
                     </span>
                 {% endif %}
+                <div class='status'>
+                {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
+                    {% if item.task.status == status %}
+                        <span class='item active-status' title='{{ status|capitalize }}'>{{ label }}</span>
+                    {% else %}
+                        <a class='item' href='y:setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
+                    {% endif %}
+                {% endfor %}
+                </div>
                 {{ item.task.title|e }}
                 {% if item.task.description %}
                     <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
