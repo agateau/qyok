@@ -37,6 +37,9 @@ li {
     border-bottom: 1px dotted #666;
     background-color: white;
 }
+li img {
+    vertical-align: middle;
+}
 li:first-child {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
@@ -121,16 +124,7 @@ function toggleVisibility(itemId) {
         <ul>
         {% for item in lst %}
             <li>
-            {% if item.task.dueDate %}
-                <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>
-                    {{ item.task.dueDate|formatDueDate }}
-                </span>
-            {% endif %}
                 <span class='toolbar'>
-                    {% if item.task.description %}
-                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'>More</a>
-                        |
-                    {% endif %}
                     {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
                         {% if item.task.status == status %}
                             <span title='{{ status|capitalize }}'>{{ label }}</span>
@@ -139,10 +133,16 @@ function toggleVisibility(itemId) {
                         {% endif %}
                     {% endfor %}
                     |
-                    <a href='edit/{{ item.task.id }}'>Edit</a>
+                    <a href='edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
                 </span>
+                {% if item.task.dueDate %}
+                    <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>
+                        {{ item.task.dueDate|formatDueDate }}
+                    </span>
+                {% endif %}
                 {{ item.task.title|e }}
                 {% if item.task.description %}
+                    <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
                     <div class='description hidden' id='description-{{ item.task.id }}'>
                         {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
                     </div>

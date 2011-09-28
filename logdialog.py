@@ -76,6 +76,8 @@ class LogDialog(QDialog):
         self.ui.setupUi(self)
         self.layout().setMargin(0)
 
+        self.dataDir = os.path.dirname(__file__)
+
         self.setupJinjaEnv()
 
         self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
@@ -107,7 +109,7 @@ class LogDialog(QDialog):
         self.jinjaEnv.filters["formatDate"] = formatDate
         self.jinjaEnv.filters["formatDueDate"] = formatDueDate
 
-        tmplDir = os.path.join(os.path.dirname(__file__), "templates")
+        tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
     def updateFilterWidgets(self):
@@ -186,7 +188,8 @@ class LogDialog(QDialog):
 
         tmpl = self.jinjaEnv.get_template("index.html")
         html = tmpl.render(lst=lst, fmt1=fmt1)
-        self.ui.webView.setHtml(html)
+        baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
+        self.ui.webView.setHtml(html, baseUrl)
 
     def updateViewAndKeepPosition(self):
         frame = self.ui.webView.page().currentFrame()
