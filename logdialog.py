@@ -88,6 +88,7 @@ class LogDialog(QDialog):
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
+                (self.ui.dueDateEdit, "dateChanged(QDate)"),
                 (self.ui.projectLineEdit, "textChanged(QString)"),
                 (self.ui.queryListWidget, "itemSelectionChanged()"),
             ]:
