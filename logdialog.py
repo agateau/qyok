@@ -202,3 +202,8 @@ class LogDialog(QDialog):
         dlg = AddTaskDialog(task, self)
         if dlg.exec_() == QDialog.Accepted:
             self.updateViewAndKeepPosition()
+
+    def do_setStatus(self, idString, status):
+        task = Task.get(int(idString))
+        task.status = status
+        self.updateViewAndKeepPosition()

@@ -127,6 +127,14 @@ function toggleVisibility(itemId) {
                 </span>
             {% endif %}
                 <span class='toolbar'>
+                    {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
+                        {% if item.task.status == status %}
+                            {{ label }}
+                        {% else %}
+                            <a href='setStatus/{{ item.task.id }}/{{ status }}'>{{ label }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    |
                     {% if item.task.description %}
                         <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'>More</a>
                     {% endif %}
