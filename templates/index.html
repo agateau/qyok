@@ -24,12 +24,14 @@ h2 {
 h2:first-child {
     padding-top: 0;
 }
-ul {
+
+/* Task list */
+ul.tasks {
     margin: 0;
     padding: 0;
     list-style-type: none;
 }
-li {
+ul.tasks > li {
     margin: 0;
     padding: 0.2em;
     border-left: 1px solid #666;
@@ -37,24 +39,27 @@ li {
     border-bottom: 1px dotted #666;
     background-color: white;
 }
-li img {
+ul.tasks > li img {
     vertical-align: middle;
 }
-li:first-child {
+ul.tasks > li:first-child {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-top: 1px solid #666;
 }
-li:last-child {
+ul.tasks > li:last-child {
     border-bottom-left-radius: 4px;
     border-bottom-right-radius: 4px;
     border-bottom: 1px solid #666;
 }
+/* /Task list */
+
 .group1 {
     margin: 6px;
     padding: 6px;
 }
 
+/* Due date */
 .due-date {
     float: right;
     border-radius: 3px;
@@ -82,6 +87,7 @@ li:last-child {
         to(#ff8)
         );
 }
+/* /Due date */
 
 .toolbar {
     float: right;
@@ -94,6 +100,25 @@ li:last-child {
 .toolbar a:hover {
     color: black;
 }
+
+/* Status */
+ul.status {
+    display: inline;
+    padding: 0;
+    margin: 0;
+}
+ul.status li {
+    display: inline;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
+    padding: 0 3px;
+    margin-left: 1px;
+}
+ul.status li.active-status {
+    background-color: #aaa;
+}
+/* /Status */
 
 .description {
     margin-top: 2px;
@@ -121,19 +146,23 @@ function toggleVisibility(itemId) {
     <h1>{{ fmt1(grp1) }}</h1>
     {% for grp2, lst in lst|groupby('grp2') %}
         <h2>{{ grp2|e }}</h2>
-        <ul>
+        <ul class="tasks">
         {% for item in lst %}
             <li>
                 <span class='toolbar'>
+                    <ul class='status'>
                     {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
                         {% if item.task.status == status %}
+                        <li class='active-status'>
                             <span title='{{ status|capitalize }}'>{{ label }}</span>
                         {% else %}
-                            <a href='setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
+                        <li>
+                            <a href='y:setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
                         {% endif %}
+                        </li>
                     {% endfor %}
-                    |
-                    <a href='edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
+                    </ul>
+                    <a href='y:edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
                 </span>
                 {% if item.task.dueDate %}
                     <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>

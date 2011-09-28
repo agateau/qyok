@@ -198,7 +198,7 @@ class LogDialog(QDialog):
         frame.setScrollPosition(pos)
 
     def dispatch(self, url):
-        if not url.scheme().isEmpty():
+        if url.scheme() != "y":
             QDesktopServices.openUrl(url)
             return
         path = unicode(url.path())
