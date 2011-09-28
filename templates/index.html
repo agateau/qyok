@@ -122,8 +122,8 @@ function toggleVisibility(itemId) {
         {% for item in lst %}
             <li>
             {% if item.task.dueDate %}
-                <span class='due-date {{ item.task|dueDateCssClass }}'>
-                    Due: {{ item.task.dueDate|formatDueDate }}
+                <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>
+                    {{ item.task.dueDate|formatDueDate }}
                 </span>
             {% endif %}
                 <span class='toolbar'>

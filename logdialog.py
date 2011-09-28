@@ -24,15 +24,23 @@ def formatDate(date):
     """
     return unicode(date.strftime("%A %d %B %Y"), "utf-8")
 
+def __tr(txt):
+    return QApplication.translate("", txt)
+
 def formatDueDate(dueDate):
     today = datetime.now()
     remaining = (dueDate.date() - today.date()).days
+    if remaining < 0:
+        txt = __tr("%1 days overdue").arg(remaining)
     if remaining == 0:
-        return unicode(QApplication.translate("", "today"))
+        txt = __tr("Due today")
     elif remaining == 1:
-        return unicode(QApplication.translate("", "tomorrow"))
+        txt = __tr("Due tomorrow")
+    elif remaining < 7:
+        txt = __tr("%1 days left").arg(remaining)
     else:
-        return unicode(dueDate.strftime("%x"), "utf-8")
+        txt = __tr("%1 weeks left").arg(remaining / 7)
+    return unicode(txt)
 
 def dueDateCssClass(task):
     done = task.status == "done"
