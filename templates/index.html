@@ -127,17 +127,18 @@ function toggleVisibility(itemId) {
                 </span>
             {% endif %}
                 <span class='toolbar'>
+                    {% if item.task.description %}
+                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'>More</a>
+                        |
+                    {% endif %}
                     {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
                         {% if item.task.status == status %}
-                            {{ label }}
+                            <span title='{{ status|capitalize }}'>{{ label }}</span>
                         {% else %}
-                            <a href='setStatus/{{ item.task.id }}/{{ status }}'>{{ label }}</a>
+                            <a href='setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
                         {% endif %}
                     {% endfor %}
                     |
-                    {% if item.task.description %}
-                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'>More</a>
-                    {% endif %}
                     <a href='edit/{{ item.task.id }}'>Edit</a>
                 </span>
                 {{ item.task.title|e }}
