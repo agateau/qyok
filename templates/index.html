@@ -104,9 +104,6 @@ ul.tasks > li:last-child {
 .description {
     margin-top: 2px;
     border-top: 1px dotted #666;
-}
-
-.hidden {
     display: none;
 }
 
@@ -116,15 +113,13 @@ input {
 }
 
 </style>
+<script src="jquery.js"></script>
 <script>
 function toggleVisibility(itemId) {
-    var element = document.getElementById(itemId);
-    if (element.getAttribute("class").indexOf("hidden") >= 0) {
-        element.setAttribute("class", "description");
-    } else {
-        element.setAttribute("class", "description hidden");
-    }
+    var speed = 200;
+    $("#" + itemId).toggle(speed);
 }
+
 function setStatus(taskId, status) {
     taskEditor.setStatus(taskId, status);
     var element = document.getElementById("task-" + taskId);
@@ -165,7 +160,7 @@ function setStatus(taskId, status) {
                     {{ item.task.title|e }}
                     {% if item.task.description %}
                         <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
-                        <div class='description hidden' id='description-{{ item.task.id }}'>
+                        <div class='description' id='description-{{ item.task.id }}'>
                             {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
                         </div>
                     {% endif %}
