@@ -101,34 +101,6 @@ ul.tasks > li:last-child {
     color: black;
 }
 
-/* Status */
-.status {
-    display: inline;
-    padding: 0;
-    margin: 0;
-}
-.status .item {
-    color: #aaa;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-decoration: none;
-    padding: 0 3px;
-    margin-left: -3px;
-}
-.status .item:first-child {
-    margin-left: 0;
-}
-
-.status a:hover {
-    background-color: #eee;
-}
-
-.status .active-status {
-    background-color: #aaa;
-    color: black;
-}
-/* /Status */
-
 .description {
     margin-top: 2px;
     border-top: 1px dotted #666;
@@ -137,6 +109,12 @@ ul.tasks > li:last-child {
 .hidden {
     display: none;
 }
+
+input {
+    margin: 0;
+    padding: 0;
+}
+
 </style>
 <script>
 function toggleVisibility(itemId) {
@@ -147,6 +125,18 @@ function toggleVisibility(itemId) {
         element.setAttribute("class", "description hidden");
     }
 }
+function setStatus(taskId, status) {
+    taskEditor.setStatus(taskId, status);
+    var element = document.getElementById("task-" + taskId);
+    var ulElement = element.parentNode;
+    ulElement.removeChild(element);
+    var count = ulElement.getElementsByTagName("li").length;
+    if (count == 0) {
+        var group2Element = ulElement.parentNode
+        var group1Element = group2Element.parentNode
+        group1Element.removeChild(group2Element)
+    }
+}
 </script>
 </head>
 <body>
@@ -154,37 +144,35 @@ function toggleVisibility(itemId) {
     <div class='group1'>
     <h1>{{ fmt1(grp1) }}</h1>
     {% for grp2, lst in lst|groupby('grp2') %}
-        <h2>{{ grp2|e }}</h2>
-        <ul class="tasks">
-        {% for item in lst %}
-            <li>
-                <span class='toolbar'>
-                    <a href='y:edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
-                </span>
-                {% if item.task.dueDate %}
-                    <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>
-                        {{ item.task.dueDate|formatDueDate }}
+        <div class='group2'>
+            <h2>{{ grp2|e }}</h2>
+            <ul class="tasks">
+            {% for item in lst %}
+                <li id='task-{{ item.task.id }}'>
+                    <span class='toolbar'>
+                        <a href='y:edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
                     </span>
-                {% endif %}
-                <div class='status'>
-                {% for label, status in [("N", "new"),("S", "started"),("D", "done")] %}
-                    {% if item.task.status == status %}
-                        <span class='item active-status' title='{{ status|capitalize }}'>{{ label }}</span>
-                    {% else %}
-                        <a class='item' href='y:setStatus/{{ item.task.id }}/{{ status }}' title='{{ status|capitalize }}'>{{ label }}</a>
+                    {% if item.task.dueDate %}
+                        <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>
+                            {{ item.task.dueDate|formatDueDate }}
+                        </span>
                     {% endif %}
-                {% endfor %}
-                </div>
-                {{ item.task.title|e }}
-                {% if item.task.description %}
-                    <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
-                    <div class='description hidden' id='description-{{ item.task.id }}'>
-                        {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
-                    </div>
-                {% endif %}
-            </li>
-        {% endfor %}
-        </ul>
+                    <input type='checkbox' onclick='setStatus({{ item.task.id }}, this.checked ? "done" : "new")'
+                    {% if item.task.status == "done" %}
+                        checked='1'
+                    {% endif %}
+                    />
+                    {{ item.task.title|e }}
+                    {% if item.task.description %}
+                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
+                        <div class='description hidden' id='description-{{ item.task.id }}'>
+                            {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
     {% endfor %}
     </div>
 {% endfor %}
