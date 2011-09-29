@@ -148,7 +148,7 @@ function setStatus(taskId, status) {
             {% for item in lst %}
                 <li id='task-{{ item.task.id }}'>
                     <span class='toolbar'>
-                        <a href='y:edit/{{ item.task.id }}'><img src='icons/document-edit.png'/></a>
+                        <a href='#' onclick='qtWindow.showTaskPopup({{ item.task.id }}, "#task-{{ item.task.id }} .popup-button"); return false;'><img class='popup-button' src='icons/document-edit.png'/></a>
                     </span>
                     {% if item.task.dueDate %}
                         <span class='due-date {{ item.task|dueDateCssClass }}' title='Due for {{ item.task.dueDate|formatDate }}'>

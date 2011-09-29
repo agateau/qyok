@@ -210,11 +210,15 @@ class LogDialog(QDialog):
         else:
             print "Unknown method", methodName
 
-    def do_edit(self, idString):
-        task = Task.get(int(idString))
+    def editTask(self, taskId):
+        task = Task.get(taskId)
         dlg = AddTaskDialog(task, self)
         if dlg.exec_() == QDialog.Accepted:
             self.updateViewAndKeepPosition()
+
+    def removeTask(self, taskId):
+        Task.delete(taskId)
+        self.updateViewAndKeepPosition()
 
     @pyqtSlot(int, str)
     def setTaskStatus(self, taskId, status):
@@ -223,4 +227,21 @@ class LogDialog(QDialog):
         task.status = status
         if status == "done":
             task.doneDate = datetime.now()
+
     @pyqtSlot(int, str)
+    def showTaskPopup(self, taskId, buttonId):
+        frame = self.ui.webView.page().mainFrame()
+        element = frame.findFirstElement(buttonId)
+        assert element
+        rect = element.geometry()
+        globalRect = QRect(self.ui.webView.mapToGlobal(rect.topLeft()) - frame.scrollPosition(), rect.size())
+
+        menu = QMenu()
+        edit = menu.addAction(self.tr("Edit"))
+        rmMenu = menu.addMenu(self.tr("Remove"))
+        remove = rmMenu.addAction(self.tr("Do It"))
+        action = menu.exec_(globalRect.bottomLeft())
+        if action == edit:
+            self.editTask(taskId)
+        elif action == remove:
+            self.removeTask(taskId)
