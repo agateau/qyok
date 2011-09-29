@@ -69,15 +69,6 @@ QUERY_DUE = 0
 QUERY_PROJECT = 1
 QUERY_DONE = 2
 
-class TaskEditor(QObject):
-    @pyqtSlot(int, str)
-    def setStatus(self, taskId, status):
-        task = Task.get(taskId)
-        status = unicode(status)
-        task.status = status
-        if status == "done":
-            task.doneDate = datetime.now()
-
 class LogDialog(QDialog):
     def __init__(self):
         super(LogDialog, self).__init__()
@@ -95,8 +86,6 @@ class LogDialog(QDialog):
 
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
         self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
-
-        self.taskEditor = TaskEditor(self)
 
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
@@ -201,7 +190,7 @@ class LogDialog(QDialog):
         html = tmpl.render(lst=lst, fmt1=fmt1)
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
         self.ui.webView.setHtml(html, baseUrl)
-        self.ui.webView.page().mainFrame().addToJavaScriptWindowObject("taskEditor", self.taskEditor)
+        self.ui.webView.page().mainFrame().addToJavaScriptWindowObject("qtWindow", self)
 
     def updateViewAndKeepPosition(self):
         frame = self.ui.webView.page().currentFrame()
@@ -226,3 +215,12 @@ class LogDialog(QDialog):
         dlg = AddTaskDialog(task, self)
         if dlg.exec_() == QDialog.Accepted:
             self.updateViewAndKeepPosition()
+
+    @pyqtSlot(int, str)
+    def setTaskStatus(self, taskId, status):
+        task = Task.get(taskId)
+        status = unicode(status)
+        task.status = status
+        if status == "done":
+            task.doneDate = datetime.now()
+    @pyqtSlot(int, str)

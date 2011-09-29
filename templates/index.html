@@ -121,7 +121,7 @@ function toggleVisibility(itemId) {
 }
 
 function setStatus(taskId, status) {
-    taskEditor.setStatus(taskId, status);
+    qtWindow.setTaskStatus(taskId, status);
     var element = $("#task-" + taskId);
     var ul = element.parent();
     var group2 = ul.parent(".group2");
