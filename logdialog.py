@@ -234,13 +234,22 @@ class LogDialog(QDialog):
         element = frame.findFirstElement(buttonId)
         assert element
         rect = element.geometry()
-        globalRect = QRect(self.ui.webView.mapToGlobal(rect.topLeft()) - frame.scrollPosition(), rect.size())
+        topLeft = self.ui.webView.mapToGlobal(rect.topLeft() - frame.scrollPosition())
 
         menu = QMenu()
         edit = menu.addAction(self.tr("Edit"))
         rmMenu = menu.addMenu(self.tr("Remove"))
         remove = rmMenu.addAction(self.tr("Do It"))
-        action = menu.exec_(globalRect.bottomLeft())
+        menuHeight = menu.sizeHint().height()
+        screenHeight = QApplication.desktop().screenGeometry(self).height()
+
+        if topLeft.y() + menuHeight < screenHeight:
+            pos = QPoint(topLeft.x(), topLeft.y() + rect.height())
+        else:
+            pos = QPoint(topLeft.x(), topLeft.y() - menuHeight)
+
+        action = menu.exec_(pos)
+
         if action == edit:
             self.editTask(taskId)
         elif action == remove:
