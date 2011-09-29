@@ -122,14 +122,17 @@ function toggleVisibility(itemId) {
 
 function setStatus(taskId, status) {
     taskEditor.setStatus(taskId, status);
-    var element = document.getElementById("task-" + taskId);
-    var ulElement = element.parentNode;
-    ulElement.removeChild(element);
-    var count = ulElement.getElementsByTagName("li").length;
-    if (count == 0) {
-        var group2Element = ulElement.parentNode
-        var group1Element = group2Element.parentNode
-        group1Element.removeChild(group2Element)
+    var element = $("#task-" + taskId);
+    var ul = element.parent();
+    var group2 = ul.parent(".group2");
+    var group1 = group2.parent(".group1");
+
+    element.remove();
+    if (ul.children("li").length == 0) {
+        group2.remove();
+    }
+    if (group1.children(".group2").length == 0) {
+        group1.remove();
     }
 }
 </script>
