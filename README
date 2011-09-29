@@ -1,9 +1,13 @@
-This is a set of Qt-based tools for Yokadi.
+# Intro
 
-# qyadd
+This is a set of Qt-based tools for Yokadi:
 
-A simple dialog to add tasks
+- qyadd: A simple dialog to add tasks
+- qylog: Browse and edit tasks
 
-# qylog
+# Dependencies
 
-Browse and edit tasks
+- Yokadi: <http://yokadi.github.com>
+- Jinja2: <http://jinja.pocoo.org>
+
+Yokadi must be set up so that it can be found in Python path.
