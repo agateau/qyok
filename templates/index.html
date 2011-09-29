@@ -162,7 +162,7 @@ function setStatus(taskId, status) {
                     />
                     {{ item.task.title|e }}
                     {% if item.task.description %}
-                        <a href='#' onclick='javascript:toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
+                        <a href='#' onclick='toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
                         <div class='description' id='description-{{ item.task.id }}'>
                             {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
                         </div>
