@@ -31,8 +31,8 @@ def formatDueDate(dueDate):
     today = datetime.now()
     remaining = (dueDate.date() - today.date()).days
     if remaining < 0:
-        txt = __tr("%1 days overdue").arg(remaining)
-    if remaining == 0:
+        txt = __tr("%1 days overdue").arg(-remaining)
+    elif remaining == 0:
         txt = __tr("Due today")
     elif remaining == 1:
         txt = __tr("Due tomorrow")
