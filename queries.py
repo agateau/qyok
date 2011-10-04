@@ -122,7 +122,7 @@ class ProjectQuery(Query):
         return dict(lst=lst, fmt1=fmt1)
 
 class DoneQuery(Query):
-    templateName = "index.html"
+    templateName = "done.html"
     __slots__ = ["minDate", "maxDate"]
 
     def  __init__(self):

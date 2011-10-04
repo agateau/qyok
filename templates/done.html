@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+{% for grp1, lst in lst|groupby('grp1')|reverse %}
+    <div class='group1'>
+    <h1>{{ fmt1(grp1) }}</h1>
+    {% for grp2, lst in lst|groupby('grp2') %}
+        <div class='group2'>
+            <h2>{{ grp2|e }}</h2>
+            <ul class="tasks">
+            {% for item in lst %}
+                <li id='task-{{ item.task.id }}'>
+                    <span class='toolbar'>
+                        <a href='#' onclick='qtWindow.showTaskPopup({{ item.task.id }}, "#task-{{ item.task.id }} .popup-button"); return false;'><img class='popup-button' src='icons/document-edit.png'/></a>
+                    </span>
+                    <input type='checkbox' onclick='setStatus({{ item.task.id }}, this.checked ? "done" : "new")'
+                    {% if item.task.status == "done" %}
+                        checked='1'
+                    {% endif %}
+                    />
+                    {{ item.task.title|e }}
+                    {% if item.task.description %}
+                        <a href='#' onclick='toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
+                        <div class='description' id='description-{{ item.task.id }}'>
+                            {{ item.task.description|e|urlize|replace("\n", "<br/>") }}
+                        </div>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+    </div>
+{% endfor %}
+{% endblock %}
