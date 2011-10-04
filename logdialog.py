@@ -98,7 +98,7 @@ class LogDialog(QDialog):
 
         QObject.connect(self.ui.queryListWidget, SIGNAL("itemSelectionChanged()"), self.updateFilterWidgets)
 
-        QObject.connect(self.ui.webView, SIGNAL("linkClicked(const QUrl&)"), self.dispatch)
+        QObject.connect(self.ui.webView, SIGNAL("linkClicked(const QUrl&)"), self.openUrl)
 
         self.updateFilterWidgets()
         self.updateView()
@@ -198,17 +198,8 @@ class LogDialog(QDialog):
         self.updateView()
         frame.setScrollPosition(pos)
 
-    def dispatch(self, url):
-        if url.scheme() != "y":
-            QDesktopServices.openUrl(url)
-            return
-        path = unicode(url.path())
-        tokens = path.split("/")
-        methodName = "do_" + tokens[0]
-        if hasattr(self, methodName):
-            getattr(self, methodName)(*tokens[1:])
-        else:
-            print "Unknown method", methodName
+    def openUrl(self, url):
+        QDesktopServices.openUrl(url)
 
     def editTask(self, taskId):
         task = Task.get(taskId)
