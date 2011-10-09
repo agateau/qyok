@@ -80,16 +80,14 @@ class Query(object):
 
 class DueQuery(Query):
     templateName = "index.html"
-    __slots__ = ["dueDate"]
 
     def __init__(self):
         super(DueQuery, self).__init__()
-        self.dueDate = None
 
     def run(self):
         super(DueQuery, self).run()
         self._filters.append(OR(Task.q.status == "new", Task.q.status == "started"))
-        self._filters.append(Task.q.dueDate < self.dueDate)
+        self._filters.append(Task.q.dueDate != None)
         tasks = Task.select(AND(*self._filters))
 
         lst = []

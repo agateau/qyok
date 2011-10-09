@@ -33,7 +33,6 @@ class LogDialog(QDialog):
 
         self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
         self.ui.toDateEdit.setDate(QDate.currentDate())
-        self.ui.dueDateEdit.setDate(QDate.currentDate())
 
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
         self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -41,7 +40,6 @@ class LogDialog(QDialog):
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
-                (self.ui.dueDateEdit, "dateChanged(QDate)"),
                 (self.ui.projectLineEdit, "textChanged(QString)"),
                 (self.ui.queryListWidget, "itemSelectionChanged()"),
             ]:
@@ -65,7 +63,6 @@ class LogDialog(QDialog):
 
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
-        self.ui.dueWidget.setVisible(queryType == QUERY_DUE)
         self.ui.doneWidget.setVisible(queryType == QUERY_DONE)
 
     def updateView(self):
@@ -101,10 +98,6 @@ class LogDialog(QDialog):
             self.query.minDate = minDate
             self.query.maxDate = maxDate
 
-        # Due date
-        if queryType == QUERY_DUE:
-            dueDate = datetimeFromQDate(self.ui.dueDateEdit.date()) + timedelta(1)
-            self.query.dueDate = dueDate
         self.updateView()
 
     def updateViewAndKeepPosition(self):
