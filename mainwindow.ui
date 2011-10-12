@@ -128,7 +128,7 @@
     <string>Add a new task</string>
    </property>
    <property name="shortcut">
-    <string>T</string>
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
