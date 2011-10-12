@@ -10,7 +10,7 @@ from yokadi.db import Task
 
 from jinja2 import Environment, FileSystemLoader
 
-from ui_logdialog import Ui_LogDialog
+from ui_mainwindow import Ui_MainWindow
 from addtaskdialog import AddTaskDialog
 from qydateutils import datetimeFromQDate, qdateFromDatetime
 
@@ -20,12 +20,12 @@ QUERY_DUE = 0
 QUERY_PROJECT = 1
 QUERY_DONE = 2
 
-class LogDialog(QDialog):
+class LogDialog(QMainWindow):
     def __init__(self):
         super(LogDialog, self).__init__()
-        self.ui = Ui_LogDialog()
+        self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.layout().setMargin(0)
+        self.centralWidget().layout().setMargin(0)
 
         self.dataDir = os.path.dirname(__file__)
 

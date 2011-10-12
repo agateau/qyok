@@ -24,7 +24,8 @@ def main(argv):
     db.connectDatabase(options.filename)
 
     dlg = LogDialog()
-    return dlg.exec_()
+    dlg.show()
+    return app.exec_()
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
