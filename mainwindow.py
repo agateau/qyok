@@ -26,6 +26,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.centralWidget().layout().setMargin(0)
+        self.setupProjectFilter()
+        self.setupActions()
 
         self.dataDir = os.path.dirname(__file__)
 
@@ -40,7 +42,7 @@ class MainWindow(QMainWindow):
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
-                (self.ui.projectLineEdit, "textChanged(QString)"),
+                (self.projectLineEdit, "textChanged(QString)"),
                 (self.ui.queryListWidget, "itemSelectionChanged()"),
             ]:
             QObject.connect(obj, SIGNAL(signal), self.updateQuery)
@@ -51,6 +53,29 @@ class MainWindow(QMainWindow):
 
         self.updateFilterWidgets()
         self.updateQuery()
+
+    def setupActions(self):
+        self.ui.newTaskAction.setIcon(QIcon.fromTheme("document-new"))
+        QObject.connect(self.ui.newTaskAction, SIGNAL("triggered()"), self.addTask)
+
+        actions = [self.ui.newTaskAction]
+        for action in actions:
+            shortcut = action.shortcut()
+            if not shortcut.isEmpty():
+                toolTip = self.tr("%1 (%2)", "%1 is the tooltip text, %2 is the action shortcut") \
+                    .arg(action.toolTip()) \
+                    .arg(shortcut.toString())
+                action.setToolTip(toolTip)
+
+    def setupProjectFilter(self):
+        self.projectLineEdit = QLineEdit()
+        self.projectLineEdit.setPlaceholderText(self.tr("Project Filter"))
+
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.ui.toolBar.addWidget(spacer)
+
+        self.ui.toolBar.addWidget(self.projectLineEdit)
 
     def setupJinjaEnv(self):
         self.jinjaEnv = Environment()
@@ -83,7 +108,7 @@ class MainWindow(QMainWindow):
         self.query = queryClasses[queryType]()
 
         # Project
-        projectName = self.ui.projectLineEdit.text()
+        projectName = self.projectLineEdit.text()
         if not projectName.isEmpty():
             self.query.projectName = unicode(projectName)
 
@@ -108,6 +133,11 @@ class MainWindow(QMainWindow):
 
     def openUrl(self, url):
         QDesktopServices.openUrl(url)
+
+    def addTask(self):
+        dlg = AddTaskDialog(task=None, parent=self)
+        if dlg.exec_() == QDialog.Accepted:
+            self.updateViewAndKeepPosition()
 
     def editTask(self, taskId):
         task = Task.get(taskId)
