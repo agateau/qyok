@@ -26,6 +26,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.centralWidget().layout().setMargin(0)
+        self.setupQueryListWidget()
         self.setupProjectFilter()
         self.setupActions()
 
@@ -53,6 +54,15 @@ class MainWindow(QMainWindow):
 
         self.updateFilterWidgets()
         self.updateQuery()
+
+    def setupQueryListWidget(self):
+        # Set widget width to be just a little wider than what is necessary to
+        # show all items
+        widget = self.ui.queryListWidget
+        fm = QFontMetrics(widget.font())
+        width = max(fm.width(widget.item(x).text()) for x in range(widget.count()))
+        widget.setFixedWidth(width + 3 * fm.width("m"))
+
 
     def setupActions(self):
         self.ui.newTaskAction.setIcon(QIcon.fromTheme("document-new"))

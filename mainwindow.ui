@@ -45,6 +45,12 @@
     </item>
     <item row="0" column="1" colspan="4">
      <widget class="QWidget" name="doneWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QLabel" name="dateLabel">
@@ -90,6 +96,12 @@
     </item>
     <item row="1" column="1" colspan="4">
      <widget class="QWebView" name="webView">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="url">
        <url>
         <string>about:blank</string>
