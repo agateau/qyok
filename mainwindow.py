@@ -20,9 +20,9 @@ QUERY_DUE = 0
 QUERY_PROJECT = 1
 QUERY_DONE = 2
 
-class LogDialog(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
-        super(LogDialog, self).__init__()
+        super(MainWindow, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.centralWidget().layout().setMargin(0)

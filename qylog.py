@@ -15,7 +15,7 @@ from PyQt4.QtGui import *
 from yokadi import db
 
 import qymain
-from logdialog import LogDialog
+from mainwindow import MainWindow
 
 def main(argv):
     app = QApplication(argv)
@@ -23,7 +23,7 @@ def main(argv):
     options, args = parser.parse_args(argv)
     db.connectDatabase(options.filename)
 
-    dlg = LogDialog()
+    dlg = MainWindow()
     dlg.show()
     return app.exec_()
 
