@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from datetime import datetime
+from operator import attrgetter
 
 from PyQt4.QtCore import QCoreApplication
 
@@ -57,7 +58,11 @@ def dueDateCssClass(task):
         return ""
 
 class Item(object):
-    __slots__ = ["task", "grp1", "grp2"]
+    __slots__ = ["task", "isNote", "grp1", "grp2", "keywords"]
+    def __init__(self, task):
+        self.task = task
+        self.keywords = task.getKeywordDict()
+        self.isNote = "_note" in self.keywords
 
 class Query(object):
     __slots__ = ["projectName", "_filters"]
@@ -92,8 +97,7 @@ class DueQuery(Query):
 
         lst = []
         for task in tasks:
-            item = Item()
-            item.task = task
+            item = Item(task)
             item.grp1 = task.dueDate.date()
             item.grp2 = task.project.name
             lst.append(item)
@@ -110,11 +114,13 @@ class ProjectQuery(Query):
 
         lst = []
         for task in tasks:
-            item = Item()
-            item.task = task
+            item = Item(task)
             item.grp1 = task.project.name
             item.grp2 = ""
             lst.append(item)
+
+        # Show notes at the end
+        lst.sort(key=attrgetter("isNote"))
 
         fmt1 = lambda x: x
         return dict(lst=lst, fmt1=fmt1)
@@ -139,8 +145,7 @@ class DoneQuery(Query):
 
         lst = []
         for task in tasks:
-            item = Item()
-            item.task = task
+            item = Item(task)
             item.grp1 = task.doneDate.date()
             item.grp2 = task.project.name
             lst.append(item)

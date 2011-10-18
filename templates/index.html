@@ -8,7 +8,7 @@
             <h2>{{ grp2|e }}</h2>
             <ul class="tasks">
             {% for item in lst %}
-                <li id='task-{{ item.task.id }}'>
+                <li id='task-{{ item.task.id }}' class='{% if item.isNote %}note{% else %}task{% endif %}'>
                     <span class='toolbar'>
                         <a href='#' onclick='qtWindow.showTaskPopup({{ item.task.id }}, "#task-{{ item.task.id }} .popup-button"); return false;'><img class='popup-button' src='icons/document-edit.png'/></a>
                     </span>
