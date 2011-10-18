@@ -42,7 +42,8 @@ class AddTaskDialog(QDialog):
 
     def initFromTask(self):
         self.ui.projectLineEdit.setText(self.task.project.name)
-        self.ui.titleLineEdit.setText(self.task.title)
+        title = parseutils.createLine("", self.task.title, self.task.getKeywordDict())
+        self.ui.titleLineEdit.setText(title)
         if self.task.dueDate is not None:
             self.ui.dueDateEdit.setDate(qdateFromDatetime(self.task.dueDate))
         if self.task.description is not None:
@@ -81,6 +82,22 @@ class AddTaskDialog(QDialog):
         box.addButton(QMessageBox.Cancel)
         return box.exec_() == QMessageBox.Ok
 
+    def confirmKeywordsCreation(self, keywords):
+        box = QMessageBox(self)
+        box.setIcon(QMessageBox.Question)
+        title = self.tr("Some keywords do not exist")
+        lst = "<ul>"
+        lst += "".join("<li>{}</li>".format(k) for k in keywords)
+        lst += "</ul>"
+        text = self.tr("<qt>The following keywords do not exist.\n%1\nCreate them?</qt>").arg(lst)
+
+        box.setWindowTitle(title)
+        box.setText(text)
+        button = box.addButton(QMessageBox.Ok)
+        button.setText(self.tr("&Create Keywords"))
+        box.addButton(QMessageBox.Cancel)
+        return box.exec_() == QMessageBox.Ok
+
     def accept(self):
         projectName = unicode(self.ui.projectLineEdit.text())
         if not projectName in self.projectList:
@@ -89,6 +106,10 @@ class AddTaskDialog(QDialog):
 
         line = projectName + u" " + unicode(self.ui.titleLineEdit.text())
         projectName, title, keywordDict = parseutils.parseLine(line)
+        newKeywords = [k for k in keywordDict if len(list(db.Keyword.selectBy(name=k))) == 0]
+        if len(newKeywords) > 0:
+            if not self.confirmKeywordsCreation(newKeywords):
+                return
 
         if self.task is None:
             try:
@@ -106,8 +127,7 @@ class AddTaskDialog(QDialog):
                 self.showErrorMessage(str(exc))
                 return
             task = self.task
-            task.title = title
-            task.project = project
+            dbutils.updateTask(task, project.name, title, keywordDict)
 
         task.description = unicode(self.ui.descriptionTextEdit.toPlainText())
         task.dueDate = datetimeFromQDate(self.ui.dueDateEdit.date())

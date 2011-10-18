@@ -61,8 +61,9 @@ class Item(object):
     __slots__ = ["task", "isNote", "grp1", "grp2", "keywords"]
     def __init__(self, task):
         self.task = task
-        self.keywords = task.getKeywordDict()
-        self.isNote = "_note" in self.keywords
+        keywordDict = task.getKeywordDict()
+        self.isNote = "_note" in keywordDict
+        self.keywords = [k for k in keywordDict if k[0] != '_']
 
 class Query(object):
     __slots__ = ["projectName", "_filters"]

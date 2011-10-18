@@ -18,6 +18,9 @@
                     {% endif %}
                     />
                     {{ item.task.title|e }}
+                    {% for keyword in item.keywords %}
+                        <span class='keyword'>{{ keyword }}</span>
+                    {% endfor %}
                     {% if item.task.description %}
                         <a href='#' onclick='toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
                         <div class='description' id='description-{{ item.task.id }}'>
