@@ -17,11 +17,13 @@
                             {{ item.task.dueDate|formatDueDate }}
                         </span>
                     {% endif %}
-                    <input type='checkbox' onclick='setStatus({{ item.task.id }}, this.checked ? "done" : "new")'
-                    {% if item.task.status == "done" %}
-                        checked='1'
+                    {% if not item.isNote %}
+                        <input type='checkbox' onclick='setStatus({{ item.task.id }}, this.checked ? "done" : "new")'
+                        {% if item.task.status == "done" %}
+                            checked='1'
+                        {% endif %}
+                        />
                     {% endif %}
-                    />
                     {{ item.task.title|e }}
                     {% for keyword in item.keywords %}
                         <span class='keyword'>{{ keyword }}</span>
