@@ -127,6 +127,7 @@ class AddTaskDialog(QDialog):
                 self.showErrorMessage(str(exc))
                 return
             task = self.task
+            dbutils.createMissingKeywords(keywordDict.keys(), interactive=False)
             dbutils.updateTask(task, project.name, title, keywordDict)
 
         task.description = unicode(self.ui.descriptionTextEdit.toPlainText())
