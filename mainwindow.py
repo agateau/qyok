@@ -104,6 +104,8 @@ class MainWindow(QMainWindow):
         args = self.query.run()
         tmpl = self.jinjaEnv.get_template(self.query.templateName)
         html = tmpl.render(args)
+        # baseUrl must end with a trailing '/' otherwise QWebView won't be able
+        # to load files from there
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
         self.ui.webView.setHtml(html, baseUrl)
         self.ui.webView.page().mainFrame().addToJavaScriptWindowObject("qtWindow", self)
