@@ -49,14 +49,17 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="doneWidget" native="true">
+       <widget class="QFrame" name="doneFrame">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>1</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="autoFillBackground">
+         <bool>true</bool>
+        </property>
+        <layout class="QHBoxLayout" name="_2">
          <item>
           <widget class="QLabel" name="dateLabel">
            <property name="text">
@@ -74,9 +77,6 @@
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>→</string>
-           </property>
-           <property name="buddy">
-            <cstring>toDateEdit</cstring>
            </property>
           </widget>
          </item>

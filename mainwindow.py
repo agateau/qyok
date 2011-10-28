@@ -33,9 +33,7 @@ class MainWindow(QMainWindow):
         self.dataDir = os.path.dirname(__file__)
 
         self.setupJinjaEnv()
-
-        self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
-        self.ui.toDateEdit.setDate(QDate.currentDate())
+        self.setupFilterWidgets()
 
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
         self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -63,6 +61,17 @@ class MainWindow(QMainWindow):
         width = max(fm.width(widget.item(x).text()) for x in range(widget.count()))
         widget.setFixedWidth(width + 3 * fm.width("m"))
 
+    def setupFilterWidgets(self):
+        self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
+        self.ui.toDateEdit.setDate(QDate.currentDate())
+        pal = QPalette(self)
+        bg = pal.window().color()
+        gradient = QLinearGradient(0, 0, 0, self.ui.doneFrame.height())
+        gradient.setColorAt(0, bg.darker(150))
+        gradient.setColorAt(0.2, bg.darker(120))
+        pal.setBrush(QPalette.Window, QBrush(gradient))
+        pal.setBrush(QPalette.Button, bg)
+        self.ui.doneFrame.setPalette(pal)
 
     def setupActions(self):
         self.ui.newTaskAction.setIcon(QIcon.fromTheme("document-new"))
@@ -98,7 +107,7 @@ class MainWindow(QMainWindow):
 
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
-        self.ui.doneWidget.setVisible(queryType == QUERY_DONE)
+        self.ui.doneFrame.setVisible(queryType == QUERY_DONE)
 
     def updateView(self):
         args = self.query.run()
