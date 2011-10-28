@@ -142,6 +142,8 @@ class DoneQuery(Query):
             self._filters.append(Task.q.doneDate >= self.minDate)
         if self.maxDate is not None:
             self._filters.append(Task.q.doneDate < self.maxDate)
+        if self.minDate is None and self.maxDate is None:
+            self._filters.append(Task.q.doneDate != None)
         tasks = Task.select(AND(*self._filters))
 
         lst = []

@@ -128,10 +128,11 @@ class MainWindow(QMainWindow):
         if queryType == QUERY_DONE:
             minDate = datetimeFromQDate(self.ui.fromDateEdit.date())
             maxDate = datetimeFromQDate(self.ui.toDateEdit.date())
-            if maxDate < minDate:
+            if minDate is not None and maxDate is not None and maxDate < minDate:
                 minDate, maxDate = maxDate, minDate
 
-            maxDate += timedelta(1)
+            if maxDate is not None:
+                maxDate += timedelta(1)
             self.query.minDate = minDate
             self.query.maxDate = maxDate
 
