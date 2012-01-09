@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
         self.ui.setupUi(self)
         self.centralWidget().layout().setMargin(0)
         self.setupQueryListWidget()
-        self.setupProjectFilter()
+        self.setupFilter()
         self.setupActions()
 
         self.dataDir = os.path.dirname(__file__)
@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
-                (self.projectLineEdit, "textChanged(QString)"),
+                (self.filterLineEdit, "textChanged(QString)"),
                 (self.ui.queryListWidget, "itemSelectionChanged()"),
             ]:
             QObject.connect(obj, SIGNAL(signal), self.updateQuery)
@@ -87,15 +87,15 @@ class MainWindow(QMainWindow):
                     .arg(shortcut.toString())
                 action.setToolTip(toolTip)
 
-    def setupProjectFilter(self):
-        self.projectLineEdit = QLineEdit()
-        self.projectLineEdit.setPlaceholderText(self.tr("Project Filter"))
+    def setupFilter(self):
+        self.filterLineEdit = QLineEdit()
+        self.filterLineEdit.setPlaceholderText(self.tr("Filter"))
 
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.ui.toolBar.addWidget(spacer)
 
-        self.ui.toolBar.addWidget(self.projectLineEdit)
+        self.ui.toolBar.addWidget(self.filterLineEdit)
 
     def setupJinjaEnv(self):
         self.jinjaEnv = Environment()
@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
         self.query = queryClasses[queryType]()
 
         # Project
-        projectName, keywordFilters = parseutils.extractKeywords(unicode(self.projectLineEdit.text()))
+        projectName, keywordFilters = parseutils.extractKeywords(unicode(self.filterLineEdit.text()))
         self.query.projectName = projectName
         self.query.keywordFilters = keywordFilters
 
