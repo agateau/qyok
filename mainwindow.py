@@ -7,6 +7,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 
 from yokadi.db import Task
+from yokadi import parseutils
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -129,9 +130,9 @@ class MainWindow(QMainWindow):
         self.query = queryClasses[queryType]()
 
         # Project
-        projectName = self.projectLineEdit.text()
-        if not projectName.isEmpty():
-            self.query.projectName = unicode(projectName)
+        projectName, keywordFilters = parseutils.extractKeywords(unicode(self.projectLineEdit.text()))
+        self.query.projectName = projectName
+        self.query.keywordFilters = keywordFilters
 
         # Status
         if queryType == QUERY_DONE:

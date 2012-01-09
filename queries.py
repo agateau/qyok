@@ -66,9 +66,10 @@ class Item(object):
         self.keywords = [k for k in keywordDict if k[0] != '_']
 
 class Query(object):
-    __slots__ = ["projectName", "_filters"]
+    __slots__ = ["projectName", "keywordFilters", "_filters"]
     def __init__(self):
         self.projectName = None
+        self.keywordFilters = []
         self._filters = []
 
     def _addProjectFilter(self):
@@ -83,6 +84,8 @@ class Query(object):
     def run(self):
         self._filters = []
         self._addProjectFilter()
+        for kwFilter in self.keywordFilters:
+            self._filters.append(kwFilter.filter())
 
 class DueQuery(Query):
     templateName = "index.html"
