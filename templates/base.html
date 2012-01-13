@@ -38,7 +38,6 @@ ul.tasks > li {
     border-right: 1px solid #666;
     border-bottom: 1px dotted #666;
     background-color: white;
-    vertical-align: top;
 }
 ul.tasks > li:first-child {
     border-top-left-radius: 4px;
@@ -100,7 +99,8 @@ ul.tasks .keyword {
 
 .toolbar {
     float: right;
-    padding: 0 2px;
+    height: 1em;
+    vertical-align: middle;
 }
 
 .toolbar a {
@@ -108,6 +108,10 @@ ul.tasks .keyword {
 }
 .toolbar a:hover {
     color: black;
+}
+
+.description-icon {
+    vertical-align: middle;
 }
 
 .description {
@@ -119,6 +123,7 @@ ul.tasks .keyword {
 input {
     margin: 0;
     padding: 0;
+    height: 1em;
 }
 
 </style>
