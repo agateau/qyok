@@ -115,8 +115,7 @@ ul.tasks .keyword {
 }
 
 .description {
-    margin-top: 2px;
-    border-top: 1px dotted #666;
+    padding-top: 6px;
     display: none;
 }
 
@@ -131,7 +130,7 @@ input {
 <script>
 function toggleVisibility(itemId) {
     var speed = 200;
-    $("#" + itemId).toggle(speed);
+    $("#" + itemId).slideToggle(speed);
 }
 
 function setStatus(taskId, status) {
