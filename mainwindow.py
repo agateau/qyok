@@ -106,14 +106,30 @@ class MainWindow(QMainWindow):
         tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
+    def paletteArgs(self):
+        def stringForRole(role):
+            return unicode(pal.color(role).name())
+        pal = self.palette()
+        lst = [
+            (QPalette.Window, "windowColor"),
+            (QPalette.WindowText, "windowTextColor"),
+            (QPalette.Base, "baseColor"),
+            (QPalette.Text, "textColor"),
+            ]
+        return dict((name, stringForRole(role)) for role, name in lst)
+
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
         self.ui.doneFrame.setVisible(queryType == QUERY_DONE)
 
     def updateView(self):
         args = self.query.run()
+        paletteArgs = self.paletteArgs()
+        print paletteArgs
+        args.update(paletteArgs)
         tmpl = self.jinjaEnv.get_template(self.query.templateName)
         html = tmpl.render(args)
+        print html
         # baseUrl must end with a trailing '/' otherwise QWebView won't be able
         # to load files from there
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
