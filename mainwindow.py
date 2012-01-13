@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from ui_mainwindow import Ui_MainWindow
 from addtaskdialog import AddTaskDialog
-from csscolor import CssColor
+from csspalette import CssPalette
 from qydateutils import datetimeFromQDate, qdateFromDatetime
 
 import queries
@@ -107,24 +107,13 @@ class MainWindow(QMainWindow):
         tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
-    def paletteArgs(self):
-        pal = self.palette()
-        lst = [
-            (QPalette.Window, "windowColor"),
-            (QPalette.WindowText, "windowTextColor"),
-            (QPalette.Base, "baseColor"),
-            (QPalette.Text, "textColor"),
-            ]
-        return dict((name, CssColor(pal.color(role))) for role, name in lst)
-
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
         self.ui.doneFrame.setVisible(queryType == QUERY_DONE)
 
     def updateView(self):
         args = self.query.run()
-        paletteArgs = self.paletteArgs()
-        args.update(paletteArgs)
+        args["palette"] = CssPalette(self.palette())
         tmpl = self.jinjaEnv.get_template(self.query.templateName)
         html = tmpl.render(args)
         # baseUrl must end with a trailing '/' otherwise QWebView won't be able
