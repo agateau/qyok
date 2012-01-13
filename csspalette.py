@@ -6,9 +6,13 @@ class CssPalette(object):
         self.qpalette = qpalette
 
     def __getattr__(self, name):
-        roleName = name[0].upper() + name[1:]
-        role = eval("QPalette." + roleName)
-        return CssColor(self.qpalette.color(role))
+        try:
+            getter = getattr(self.qpalette, name)
+        except AttributeError:
+            print "No such color role '%s'" % name
+            return CssColor(QColor("purple"))
+        brush = getter()
+        return CssColor(brush.color())
 
 class CssColor(object):
     def __init__(self, qcolor):
