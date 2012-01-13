@@ -125,11 +125,9 @@ class MainWindow(QMainWindow):
     def updateView(self):
         args = self.query.run()
         paletteArgs = self.paletteArgs()
-        print paletteArgs
         args.update(paletteArgs)
         tmpl = self.jinjaEnv.get_template(self.query.templateName)
         html = tmpl.render(args)
-        print html
         # baseUrl must end with a trailing '/' otherwise QWebView won't be able
         # to load files from there
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
