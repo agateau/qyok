@@ -13,6 +13,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from ui_mainwindow import Ui_MainWindow
 from addtaskdialog import AddTaskDialog
+from csscolor import CssColor
 from qydateutils import datetimeFromQDate, qdateFromDatetime
 
 import queries
@@ -107,8 +108,6 @@ class MainWindow(QMainWindow):
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
     def paletteArgs(self):
-        def stringForRole(role):
-            return unicode(pal.color(role).name())
         pal = self.palette()
         lst = [
             (QPalette.Window, "windowColor"),
@@ -116,7 +115,7 @@ class MainWindow(QMainWindow):
             (QPalette.Base, "baseColor"),
             (QPalette.Text, "textColor"),
             ]
-        return dict((name, stringForRole(role)) for role, name in lst)
+        return dict((name, CssColor(pal.color(role))) for role, name in lst)
 
     def updateFilterWidgets(self):
         queryType = self.ui.queryListWidget.currentRow()
