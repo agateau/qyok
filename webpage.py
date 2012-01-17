@@ -13,5 +13,5 @@ class WebPage(QWebPage):
         self.logger = logger
 
     def javaScriptConsoleMessage(self, msg, lineNumber, sourceID):
-        self.logger.warning("JsConsole: %s:%d: %s" % (sourceID, lineNumber, msg))
+        self.logger.warning("JsConsole(%s:%d): %s" % (sourceID, lineNumber, msg))
 
