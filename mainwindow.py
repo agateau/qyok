@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 import os
+import logging
 from datetime import datetime, timedelta
 
 from PyQt4.QtCore import *
@@ -15,6 +16,7 @@ from ui_mainwindow import Ui_MainWindow
 from addtaskdialog import AddTaskDialog
 from csspalette import CssPalette
 from qydateutils import datetimeFromQDate, qdateFromDatetime
+from console import Console
 
 import queries
 
@@ -36,6 +38,7 @@ class MainWindow(QMainWindow):
 
         self.setupJinjaEnv()
         self.setupFilterWidgets()
+        self.setupConsole()
 
         self.ui.webView.settings().setDefaultTextEncoding("utf-8")
         self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
@@ -54,6 +57,10 @@ class MainWindow(QMainWindow):
 
         self.updateFilterWidgets()
         self.updateQuery()
+
+    def setupConsole(self):
+        logging.basicConfig(level=logging.DEBUG)
+        self.console = Console(parent=self)
 
     def setupQueryListWidget(self):
         # Set widget width to be just a little wider than what is necessary to
@@ -121,6 +128,7 @@ class MainWindow(QMainWindow):
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
         self.ui.webView.setHtml(html, baseUrl)
         self.ui.webView.page().mainFrame().addToJavaScriptWindowObject("qtWindow", self)
+        self.ui.webView.page().mainFrame().addToJavaScriptWindowObject("console", self.console)
 
     def updateQuery(self):
         queryType = self.ui.queryListWidget.currentRow()
