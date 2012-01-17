@@ -2,6 +2,11 @@
 from PyQt4.QtGui import *
 
 class CssPalette(object):
+    """
+    Expose a Qt palette to Jinja. If one exposes an object name "palette" in
+    Jinja, then it is possible to access the palette as: {{ palette.window }}
+    the part after "palette." can be any Qt color role.
+    """
     def __init__(self, qpalette):
         self.qpalette = qpalette
 
