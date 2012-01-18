@@ -119,32 +119,85 @@ input {
     height: 1em;
 }
 
+/* notification */
+#notification {
+    display: none;
+    background: -webkit-gradient(linear, left top, left bottom,
+        from(#ffe68e),
+        to(#ffd53d)
+        );
+    color: black;
+    border: 1px solid #ffc800;
+    border-radius: 5px;
+    padding: 3px;
+    position: fixed;
+    top: 2px;
+    right: 2px;
+}
+
 </style>
 <script src="jquery.js"></script>
 <script>
+var gNotificationTimer = null;
+var gUndoFunction = null;
+
+var NOTIFICATION_TIMEOUT = 5000;
+var NOTIFICATION_ANIM_DURATION = 400;
+
 function toggleVisibility(itemId) {
     var speed = 200;
     $("#" + itemId).slideToggle(speed);
 }
 
+function showNotification(msg, undoFunction) {
+    $("#notification-text").html(msg);
+    gUndoFunction = undoFunction;
+    $("#notification").fadeIn(NOTIFICATION_ANIM_DURATION);
+    gNotificationTimer = setTimeout(hideNotification, NOTIFICATION_TIMEOUT);
+}
+
+function hideNotification() {
+    $("#notification").fadeOut(NOTIFICATION_ANIM_DURATION);
+    clearTimeout(gNotificationTimer);
+}
+
 function setStatus(taskId, status) {
     qtWindow.setTaskStatus(taskId, status);
+    var hiddenElements = new Array();
     var element = $("#task-" + taskId);
     var ul = element.parent();
     var group2 = ul.parent(".group2");
     var group1 = group2.parent(".group1");
 
-    element.remove();
-    if (ul.children("li").length == 0) {
-        group2.remove();
+    element.hide();
+    hiddenElements.push(element);
+    if (ul.children("li:visible").length == 0) {
+        group2.hide();
+        hiddenElements.push(group2);
     }
-    if (group1.children(".group2").length == 0) {
-        group1.remove();
+    if (group1.children(".group2:visible").length == 0) {
+        group1.hide();
+        hiddenElements.push(group1);
     }
+
+    showNotification("Task marked as " + status + ".", function() {
+        for(idx in hiddenElements) {
+            hiddenElements[idx].show();
+        }
+        var checkbox = $("#task-" + taskId + " input:checkbox")[0];
+        if (status == "new") {
+            qtWindow.setTaskStatus(taskId, "done");
+            checkbox.checked = true;
+        } else {
+            qtWindow.setTaskStatus(taskId, "new");
+            checkbox.checked = false;
+        }
+    });
 }
 </script>
 </head>
 <body>
+<div id="notification"><span id="notification-text"></span> <a id="notification-undo" onclick="gUndoFunction(); hideNotification(); return false" href="#">Undo</a></div>
 {% block content %}{% endblock %}
 </body>
 </html>
