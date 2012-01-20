@@ -39,9 +39,6 @@ class MainWindow(QMainWindow):
         self.setupJinjaEnv()
         self.setupFilterWidgets()
 
-        self.ui.webView.settings().setDefaultTextEncoding("utf-8")
-        self.ui.webView.page().setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
-
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
@@ -113,17 +110,22 @@ class MainWindow(QMainWindow):
         queryType = self.ui.queryListWidget.currentRow()
         self.ui.doneFrame.setVisible(queryType == QUERY_DONE)
 
-    def updateView(self):
+    def generateHtml(self):
         args = self.query.run()
         args["palette"] = CssPalette(self.palette())
         tmpl = self.jinjaEnv.get_template(self.query.templateName)
-        html = tmpl.render(args)
+        return tmpl.render(args)
+
+    def updateView(self):
+        page = WebPage(logger=None, parent=self)
+        page.setLinkDelegationPolicy(QWebPage.DelegateAllLinks)
+        page.mainFrame().addToJavaScriptWindowObject("qtWindow", self)
+        self.ui.webView.setPage(page)
+
+        html = self.generateHtml()
         # baseUrl must end with a trailing '/' otherwise QWebView won't be able
         # to load files from there
         baseUrl = QUrl.fromLocalFile(os.path.join(self.dataDir, "static/"))
-        page = WebPage(logger=None, parent=self)
-        page.mainFrame().addToJavaScriptWindowObject("qtWindow", self)
-        self.ui.webView.setPage(page)
         self.ui.webView.setHtml(html, baseUrl)
 
     def updateQuery(self):
