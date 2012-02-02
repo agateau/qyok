@@ -89,13 +89,17 @@ class MainWindow(QMainWindow):
 
     def setupFilter(self):
         self.filterLineEdit = QLineEdit()
-        self.filterLineEdit.setPlaceholderText(self.tr("Filter"))
+        self.filterLineEdit.setPlaceholderText(self.tr("Filter (Ctrl+F)"))
 
         spacer = QWidget()
         spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.ui.toolBar.addWidget(spacer)
 
         self.ui.toolBar.addWidget(self.filterLineEdit)
+
+        shortcut = QShortcut(self)
+        shortcut.setKey(Qt.CTRL + Qt.Key_F)
+        shortcut.activated.connect(self.filterLineEdit.setFocus)
 
     def setupJinjaEnv(self):
         self.jinjaEnv = Environment()
