@@ -7,6 +7,8 @@ from PyQt4.QtCore import QCoreApplication
 from sqlobject import AND, OR, LIKE, IN
 from sqlobject.sqlbuilder import Select
 
+import yaml
+
 from yokadi.db import Task, Project
 
 def formatDate(date):
@@ -163,3 +165,12 @@ class DoneQuery(Query):
         fmt1 = formatDate
         return dict(lst=lst, fmt1=fmt1)
 
+def loadProjectQueries(fileName):
+    def queryFromDict(dct):
+        query = ProjectQuery(dct["name"])
+        query.defaultProjectName = dct.get("project_filter")
+        query.defaultKeywordFilters = dct.get("keyword_filters", [])
+        return query
+
+    lst = yaml.load(open(fileName))
+    return [queryFromDict(x) for x in lst]

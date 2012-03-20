@@ -23,6 +23,8 @@ import queries
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.dataDir = os.path.dirname(__file__)
+
         self.setupQueryList()
 
         self.ui = Ui_MainWindow()
@@ -31,8 +33,6 @@ class MainWindow(QMainWindow):
         self.setupQueryListWidget()
         self.setupFilter()
         self.setupActions()
-
-        self.dataDir = os.path.dirname(__file__)
 
         self.setupJinjaEnv()
         self.setupFilterWidgets()
@@ -56,6 +56,7 @@ class MainWindow(QMainWindow):
         self.queryList = []
         self.queryList.append(queries.DueQuery())
         self.queryList.append(queries.ProjectQuery("All Projects"))
+        self.queryList.extend(queries.loadProjectQueries(self.dataDir + "/projects.yaml"))
         self.queryList.append(queries.DoneQuery())
 
     def setupQueryListWidget(self):
