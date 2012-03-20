@@ -65,7 +65,6 @@ class MainWindow(QMainWindow):
         widget = self.ui.queryListWidget
 
         for query in self.queryList:
-            print query
             item = QListWidgetItem(query.name, widget)
 
         fm = QFontMetrics(widget.font())
