@@ -54,9 +54,14 @@ class MainWindow(QMainWindow):
     def setupQueryList(self):
         self.query = None
         self.queryList = []
+
         self.queryList.append(queries.DueQuery())
         self.queryList.append(queries.ProjectQuery("All Projects"))
-        self.queryList.extend(queries.loadProjectQueries(self.dataDir + "/projects.yaml"))
+
+        projectQueryFileName = os.path.expanduser("~/.config/qyok/projects.yaml")
+        if os.path.exists(projectQueryFileName):
+            self.queryList.extend(queries.loadProjectQueries(projectQueryFileName))
+
         self.queryList.append(queries.DoneQuery())
 
     def setupQueryListWidget(self):
