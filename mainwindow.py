@@ -20,13 +20,13 @@ from webpage import WebPage
 
 import queries
 
-QUERY_DUE = 0
-QUERY_PROJECT = 1
-QUERY_DONE = 2
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.dataDir = os.path.dirname(__file__)
+
+        self.setupQueryList()
+
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.centralWidget().layout().setMargin(0)
@@ -34,33 +34,56 @@ class MainWindow(QMainWindow):
         self.setupFilter()
         self.setupActions()
 
-        self.dataDir = os.path.dirname(__file__)
-
         self.setupJinjaEnv()
         self.setupFilterWidgets()
 
         for obj, signal in [
                 (self.ui.fromDateEdit, "dateChanged(QDate)"),
                 (self.ui.toDateEdit, "dateChanged(QDate)"),
-                (self.filterLineEdit, "textChanged(QString)"),
-                (self.ui.queryListWidget, "itemSelectionChanged()"),
+                (self.filterLineEdit, "textEdited(QString)"),
             ]:
             QObject.connect(obj, SIGNAL(signal), self.updateQuery)
 
-        QObject.connect(self.ui.queryListWidget, SIGNAL("itemSelectionChanged()"), self.updateFilterWidgets)
+        QObject.connect(self.ui.queryListWidget, SIGNAL("itemSelectionChanged()"), self.onCurrentQueryChanged)
 
         QObject.connect(self.ui.webView, SIGNAL("linkClicked(const QUrl&)"), self.openUrl)
 
         self.updateFilterWidgets()
         self.updateQuery()
 
+    def setupQueryList(self):
+        self.query = None
+        self.queryList = []
+
+        self.queryList.append(queries.DueQuery())
+        self.queryList.append(queries.ProjectQuery("All Projects"))
+
+        projectQueryFileName = os.path.expanduser("~/.config/qyok/projects.yaml")
+        if os.path.exists(projectQueryFileName):
+            self.queryList.extend(queries.loadProjectQueries(projectQueryFileName))
+
+        self.queryList.append(queries.DoneQuery())
+
     def setupQueryListWidget(self):
         # Set widget width to be just a little wider than what is necessary to
         # show all items
         widget = self.ui.queryListWidget
+
+        for index, query in enumerate(self.queryList):
+            if index < 12:
+                label = query.name + " (F%d)" % (index + 1)
+                shortcut = QShortcut("F%d" % (index + 1), self)
+                shortcut.setProperty("row", index)
+                shortcut.activated.connect(self.onQueryShortcutActivated)
+            else:
+                label = query.name
+            item = QListWidgetItem(label, widget)
+
         fm = QFontMetrics(widget.font())
         width = max(fm.width(widget.item(x).text()) for x in range(widget.count()))
         widget.setFixedWidth(width + 3 * fm.width("m"))
+
+        widget.setCurrentRow(0)
 
     def setupFilterWidgets(self):
         self.ui.fromDateEdit.setDate(QDate.currentDate().addDays(-7))
@@ -110,9 +133,26 @@ class MainWindow(QMainWindow):
         tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
 
+    def onQueryShortcutActivated(self):
+        row, ok = self.sender().property("row").toInt()
+        if ok:
+            self.ui.queryListWidget.setCurrentRow(row)
+
+    def onCurrentQueryChanged(self):
+        self.updateFilterWidgets()
+
+        row = self.ui.queryListWidget.currentRow()
+        query = self.queryList[row]
+
+        defaultFilters = []
+        if query.defaultProjectName is not None:
+            defaultFilters.append(query.defaultProjectName)
+        defaultFilters.extend(["@" + x for x in query.defaultKeywordFilters])
+        self.filterLineEdit.setText(" ".join(defaultFilters))
+        self.updateQuery()
+
     def updateFilterWidgets(self):
-        queryType = self.ui.queryListWidget.currentRow()
-        self.ui.doneFrame.setVisible(queryType == QUERY_DONE)
+        self.ui.doneFrame.setVisible(isinstance(self.query, queries.DoneQuery))
 
     def generateHtml(self):
         args = self.query.run()
@@ -133,13 +173,8 @@ class MainWindow(QMainWindow):
         self.ui.webView.setHtml(html, baseUrl)
 
     def updateQuery(self):
-        queryType = self.ui.queryListWidget.currentRow()
-        queryClasses = {
-            QUERY_DUE: queries.DueQuery,
-            QUERY_PROJECT: queries.ProjectQuery,
-            QUERY_DONE: queries.DoneQuery,
-            }
-        self.query = queryClasses[queryType]()
+        row = self.ui.queryListWidget.currentRow()
+        self.query = self.queryList[row]
 
         # Project
         projectName, keywordFilters = parseutils.extractKeywords(unicode(self.filterLineEdit.text()))
@@ -147,7 +182,7 @@ class MainWindow(QMainWindow):
         self.query.keywordFilters = keywordFilters
 
         # Status
-        if queryType == QUERY_DONE:
+        if isinstance(self.query, queries.DoneQuery):
             minDate = datetimeFromQDate(self.ui.fromDateEdit.date())
             maxDate = datetimeFromQDate(self.ui.toDateEdit.date())
             if minDate is not None and maxDate is not None and maxDate < minDate:

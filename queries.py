@@ -7,6 +7,8 @@ from PyQt4.QtCore import QCoreApplication
 from sqlobject import AND, OR, LIKE, IN
 from sqlobject.sqlbuilder import Select
 
+import yaml
+
 from yokadi.db import Task, Project
 
 def formatDate(date):
@@ -66,10 +68,13 @@ class Item(object):
         self.keywords = [k for k in keywordDict if k[0] != '_']
 
 class Query(object):
-    __slots__ = ["projectName", "keywordFilters", "_filters"]
-    def __init__(self):
+    __slots__ = ["name", "defaultProjectName", "defaultKeywordFilters", "projectName", "keywordFilters", "_filters"]
+    def __init__(self, name):
+        self.name = name
         self.projectName = None
+        self.defaultProjectName = None
         self.keywordFilters = []
+        self.defaultKeywordFilters = []
         self._filters = []
 
     def _addProjectFilter(self):
@@ -91,7 +96,7 @@ class DueQuery(Query):
     templateName = "index.html"
 
     def __init__(self):
-        super(DueQuery, self).__init__()
+        super(DueQuery, self).__init__("Due")
 
     def run(self):
         super(DueQuery, self).run()
@@ -111,6 +116,7 @@ class DueQuery(Query):
 
 class ProjectQuery(Query):
     templateName = "index.html"
+
     def run(self):
         super(ProjectQuery, self).run()
         self._filters.append(OR(Task.q.status == "new", Task.q.status == "started"))
@@ -134,7 +140,7 @@ class DoneQuery(Query):
     __slots__ = ["minDate", "maxDate"]
 
     def  __init__(self):
-        super(DoneQuery, self).__init__()
+        super(DoneQuery, self).__init__("Done")
         self.minDate = None
         self.maxDate = None
 
@@ -159,3 +165,12 @@ class DoneQuery(Query):
         fmt1 = formatDate
         return dict(lst=lst, fmt1=fmt1)
 
+def loadProjectQueries(fileName):
+    def queryFromDict(dct):
+        query = ProjectQuery(dct["name"])
+        query.defaultProjectName = dct.get("project_filter")
+        query.defaultKeywordFilters = dct.get("keyword_filters", [])
+        return query
+
+    lst = yaml.load(open(fileName))
+    return [queryFromDict(x) for x in lst]
