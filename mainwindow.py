@@ -69,8 +69,15 @@ class MainWindow(QMainWindow):
         # show all items
         widget = self.ui.queryListWidget
 
-        for query in self.queryList:
-            item = QListWidgetItem(query.name, widget)
+        for index, query in enumerate(self.queryList):
+            if index < 12:
+                label = query.name + " (F%d)" % (index + 1)
+                shortcut = QShortcut("F%d" % (index + 1), self)
+                shortcut.setProperty("row", index)
+                shortcut.activated.connect(self.onQueryShortcutActivated)
+            else:
+                label = query.name
+            item = QListWidgetItem(label, widget)
 
         fm = QFontMetrics(widget.font())
         width = max(fm.width(widget.item(x).text()) for x in range(widget.count()))
@@ -125,6 +132,11 @@ class MainWindow(QMainWindow):
 
         tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
+
+    def onQueryShortcutActivated(self):
+        row, ok = self.sender().property("row").toInt()
+        if ok:
+            self.ui.queryListWidget.setCurrentRow(row)
 
     def onCurrentQueryChanged(self):
         self.updateFilterWidgets()
