@@ -66,10 +66,13 @@ class Item(object):
         self.keywords = [k for k in keywordDict if k[0] != '_']
 
 class Query(object):
-    __slots__ = ["projectName", "keywordFilters", "_filters"]
-    def __init__(self):
+    __slots__ = ["name", "defaultProjectName", "defaultKeywordFilters", "projectName", "keywordFilters", "_filters"]
+    def __init__(self, name):
+        self.name = name
         self.projectName = None
+        self.defaultProjectName = None
         self.keywordFilters = []
+        self.defaultKeywordFilters = []
         self._filters = []
 
     def _addProjectFilter(self):
@@ -91,7 +94,7 @@ class DueQuery(Query):
     templateName = "index.html"
 
     def __init__(self):
-        super(DueQuery, self).__init__()
+        super(DueQuery, self).__init__("Due")
 
     def run(self):
         super(DueQuery, self).run()
@@ -111,6 +114,7 @@ class DueQuery(Query):
 
 class ProjectQuery(Query):
     templateName = "index.html"
+
     def run(self):
         super(ProjectQuery, self).run()
         self._filters.append(OR(Task.q.status == "new", Task.q.status == "started"))
@@ -134,7 +138,7 @@ class DoneQuery(Query):
     __slots__ = ["minDate", "maxDate"]
 
     def  __init__(self):
-        super(DoneQuery, self).__init__()
+        super(DoneQuery, self).__init__("Done")
         self.minDate = None
         self.maxDate = None
 
