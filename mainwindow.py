@@ -65,10 +65,9 @@ class MainWindow(QMainWindow):
         self.queryList.append(queries.DoneQuery())
 
     def setupQueryListWidget(self):
-        # Set widget width to be just a little wider than what is necessary to
-        # show all items
         widget = self.ui.queryListWidget
 
+        # Create items and associated shortcuts
         for index, query in enumerate(self.queryList):
             if index < 12:
                 label = query.name + " (F%d)" % (index + 1)
@@ -79,9 +78,16 @@ class MainWindow(QMainWindow):
                 label = query.name
             item = QListWidgetItem(label, widget)
 
+        # Set widget width to be just a little wider than what is necessary to
+        # show all items
         fm = QFontMetrics(widget.font())
         width = max(fm.width(widget.item(x).text()) for x in range(widget.count()))
         widget.setFixedWidth(width + 3 * fm.width("m"))
+
+        # Set item heights to twice the font size so that they are easier to click
+        sh = QSize(width, fm.height() * 2)
+        for idx in range(widget.count()):
+            widget.item(idx).setSizeHint(sh)
 
         widget.setCurrentRow(0)
 
