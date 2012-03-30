@@ -145,8 +145,6 @@ class MainWindow(QMainWindow):
             self.ui.queryListWidget.setCurrentRow(row)
 
     def onCurrentQueryChanged(self):
-        self.updateFilterWidgets()
-
         row = self.ui.queryListWidget.currentRow()
         query = self.queryList[row]
 
@@ -156,6 +154,8 @@ class MainWindow(QMainWindow):
         defaultFilters.extend(["@" + x for x in query.defaultKeywordFilters])
         self.filterLineEdit.setText(" ".join(defaultFilters))
         self.updateQuery()
+
+        self.updateFilterWidgets()
 
     def updateFilterWidgets(self):
         self.ui.doneFrame.setVisible(isinstance(self.query, queries.DoneQuery))
