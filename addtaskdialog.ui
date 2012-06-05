@@ -48,7 +48,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>D&amp;escription:</string>
+        <string>&amp;Description:</string>
        </property>
        <property name="buddy">
         <cstring>descriptionTextEdit</cstring>
@@ -74,7 +74,7 @@
      <item row="3" column="0">
       <widget class="QLabel" name="dueDateLabel">
        <property name="text">
-        <string>D&amp;ue Date:</string>
+        <string>Du&amp;e Date:</string>
        </property>
        <property name="buddy">
         <cstring>dueDateEdit</cstring>
@@ -113,7 +113,7 @@
        <item>
         <widget class="QRadioButton" name="statusDone">
          <property name="text">
-          <string>&amp;Done</string>
+          <string>D&amp;one</string>
          </property>
         </widget>
        </item>
