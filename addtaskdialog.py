@@ -28,6 +28,9 @@ class AddTaskDialog(QDialog):
 
         self.ui.doneDateEdit.setDate(QDate.currentDate())
 
+        font = QFont("Mono")
+        self.ui.descriptionTextEdit.setFont(font)
+
         self.okButton = self.ui.buttonBox.button(QDialogButtonBox.Ok)
 
         if self.task is not None:
