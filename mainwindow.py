@@ -12,6 +12,8 @@ from yokadi import parseutils
 
 from jinja2 import Environment, FileSystemLoader
 
+import markdown
+
 from ui_mainwindow import Ui_MainWindow
 from addtaskdialog import AddTaskDialog
 from csspalette import CssPalette
@@ -135,6 +137,7 @@ class MainWindow(QMainWindow):
         self.jinjaEnv.filters["dueDateCssClass"] = queries.dueDateCssClass
         self.jinjaEnv.filters["formatDate"] = queries.formatDate
         self.jinjaEnv.filters["formatDueDate"] = queries.formatDueDate
+        self.jinjaEnv.filters["markdown"] = markdown.markdown
 
         tmplDir = os.path.join(self.dataDir, "templates")
         self.jinjaEnv.loader = FileSystemLoader(tmplDir)
