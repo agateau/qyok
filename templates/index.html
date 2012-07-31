@@ -31,7 +31,7 @@
                     {% if item.task.description %}
                         <a class="description-icon" href='#' onclick='toggleVisibility("description-{{ item.task.id }}"); return false'><img src='icons/text-x-generic.png'/></a>
                         <div class='description' id='description-{{ item.task.id }}'>
-                            {{ item.task.description|e|markdown }}
+                            {{ item.task.description|markdown }}
                         </div>
                     {% endif %}
                 </li>
